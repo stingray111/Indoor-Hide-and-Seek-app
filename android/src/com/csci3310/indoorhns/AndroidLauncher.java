@@ -7,10 +7,14 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.csci3310.indoorhns.IndoorHideAndSeek;
 
 public class AndroidLauncher extends AndroidApplication {
+
+	IndoorHideAndSeek game;
+
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new IndoorHideAndSeek(), config);
+		game = new IndoorHideAndSeek();
+		initialize(game, config);
 	}
 }

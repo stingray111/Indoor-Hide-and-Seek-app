@@ -1,0 +1,29 @@
+
+textureAtlas.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+gamePopupFrame
+  rotate: false
+  xy: 1, 53
+  size: 90, 65
+  split: 31, 31, 25, 25
+  orig: 90, 65
+  offset: 0, 0
+  index: -1
+gameButton
+  rotate: false
+  xy: 1, 18
+  size: 68, 33
+  split: 21, 23, 9, 20
+  orig: 68, 33
+  offset: 0, 0
+  index: -1
+welcomeScreenButton
+  rotate: false
+  xy: 71, 1
+  size: 50, 50
+  split: 22, 23, 22, 22
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
