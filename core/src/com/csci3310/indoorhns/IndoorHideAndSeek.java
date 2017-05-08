@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class IndoorHideAndSeek extends Game {
 
+	public AndroidConnector connector;
+
 	static public class BlackScreen implements Screen {
 
 		public BlackScreen(){
@@ -53,6 +55,11 @@ public class IndoorHideAndSeek extends Game {
 
 		}
 	}
+
+	public IndoorHideAndSeek(AndroidConnector connector){
+		this.connector = connector;
+	}
+
 	@Override
 	public void create () {
 		// more setting and init here
