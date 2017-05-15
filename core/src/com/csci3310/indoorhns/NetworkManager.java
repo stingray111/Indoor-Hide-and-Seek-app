@@ -12,29 +12,52 @@ public class NetworkManager {
 
     public void joinRoom(String roomId, final NetworkTaskFinishListener listener){
         //TO-DO join room network IO
-
-
-
-        // finally call codes below to inform ui
-        Gdx.app.postRunnable(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                listener.onJoinRoomFinish();
+
+
+                // pretend waiting for network response
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                // finally call codes below to inform ui
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onJoinRoomFinish();
+                    }
+                });
             }
-        });
+        }).start();
     }
 
     public void createRoom(final NetworkTaskFinishListener listener){
         //TO-DO create room network IO
-
-
-        //finally call codes below to inform ui
-        Gdx.app.postRunnable(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                listener.onCreateRoomFinish("ROOM ID");
+
+
+                // pretend waiting for network response
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                //finally call codes below to inform ui
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onCreateRoomFinish("ROOM ID");
+                    }
+                });
             }
-        });
+        }).start();
     }
 
     public void leaveRoom(){
