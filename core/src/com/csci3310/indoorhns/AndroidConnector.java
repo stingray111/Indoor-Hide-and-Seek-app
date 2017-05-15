@@ -15,4 +15,8 @@ public class AndroidConnector{
     public AndroidConnectorRequestListener getRequestListener(){
         return rootActivityListener;
     }
+
+    public interface AndroidConnectorRequestListener {
+        void onTestRequest();
+    }
 }

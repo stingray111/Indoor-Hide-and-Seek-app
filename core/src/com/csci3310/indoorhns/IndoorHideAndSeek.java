@@ -9,62 +9,28 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+
 public class IndoorHideAndSeek extends Game {
 
 	public AndroidConnector connector;
-
-	static public class BlackScreen implements Screen {
-
-		public BlackScreen(){
-
-		}
-
-		@Override
-		public void show() {
-
-		}
-
-		@Override
-		public void render(float delta) {
-			Gdx.gl.glClearColor(0, 0, 0, 1);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		}
-
-		@Override
-		public void resize(int width, int height) {
-
-		}
-
-		@Override
-		public void pause() {
-
-		}
-
-		@Override
-		public void resume() {
-
-		}
-
-		@Override
-		public void hide() {
-
-		}
-
-		@Override
-		public void dispose() {
-
-		}
-	}
+	public NetworkManager networkManager;
+	public ScreenManager screenManager;
 
 	public IndoorHideAndSeek(AndroidConnector connector){
 		this.connector = connector;
+		this.networkManager = new NetworkManager();
+		this.screenManager = new ScreenManager(this);
 	}
+
+	public NetworkManager getNetworkManager(){return this.networkManager;}
+	public ScreenManager getScreenManager(){return this.screenManager;}
 
 	@Override
 	public void create () {
 		// more setting and init here
 		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setCatchMenuKey(true);
-		this.setScreen(new TransitionScreen(this, new BlackScreen(), WelcomeScreen.class));
+		this.setScreen(new ScreenManager.BlackScreen());
+		screenManager.transitToWelcomeScreen();
 	}
 }

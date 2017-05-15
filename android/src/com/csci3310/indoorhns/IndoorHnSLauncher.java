@@ -1,19 +1,11 @@
 package com.csci3310.indoorhns;
 
-import android.app.Service;
-import android.content.Context;
 import android.os.Bundle;
-import android.view.inputmethod.InputMethod;
-import android.view.inputmethod.InputMethodInfo;
-import android.view.inputmethod.InputMethodManager;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.csci3310.indoorhns.IndoorHideAndSeek;
 
-import java.util.List;
-
-public class IndoorHnSLauncher extends AndroidApplication implements AndroidConnectorRequestListener {
+public class IndoorHnSLauncher extends AndroidApplication implements AndroidConnector.AndroidConnectorRequestListener {
 
 	IndoorHideAndSeek game;
 
