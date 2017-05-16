@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import sun.rmi.runtime.Log;
 
 /**
  * Created by Edmund on 5/14/2017.
