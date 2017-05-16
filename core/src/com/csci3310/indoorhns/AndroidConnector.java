@@ -6,17 +6,19 @@ package com.csci3310.indoorhns;
 
 public class AndroidConnector{
 
-    private AndroidConnectorRequestListener rootActivityListener;
+    private AndroidConnectorCoordinator coordinator;
 
-    public AndroidConnector(AndroidConnectorRequestListener rootActivityListener){
-        this.rootActivityListener = rootActivityListener;
+    public AndroidConnector(AndroidConnectorCoordinator coordinator){
+        this.coordinator = coordinator;
     }
 
-    public AndroidConnectorRequestListener getRequestListener(){
-        return rootActivityListener;
+    public AndroidConnectorCoordinator getCoordinator(){
+        return coordinator;
     }
 
-    public interface AndroidConnectorRequestListener {
-        void onTestRequest();
+    public interface AndroidConnectorCoordinator {
+        void test();
+        String getAndroidId();
+        void showToast(String message);
     }
 }

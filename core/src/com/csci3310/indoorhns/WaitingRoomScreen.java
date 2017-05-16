@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Edmund on 5/15/2017.
@@ -46,35 +48,58 @@ public class WaitingRoomScreen implements Screen {
     private Label roomIdTextLabel, roomIdLabel, isHuntingLabel, loadingPopupLabel;
     private Stack loadingPopupStack;
     private ArrayList<Label> hunterLabelList, hunteeLabelList;
-    private ArrayList<Player> playerList;
+    private HashMap<String, Player> playerMap;
+    private Player me;
+    private boolean playerListUpdatePollingTrigger;
+
+    public boolean getPlayerListUpdatePollingTrigger(){return this.playerListUpdatePollingTrigger;}
+    public HashMap<String, Player> getPlayerMap(){return this.playerMap;};
+    public Player getMe(){return this.me;}
 
     public WaitingRoomScreen(IndoorHideAndSeek mainGame, String roomId, Player me){
         this.mainGame = mainGame;
         this.roomId = roomId;
         this.width = Gdx.graphics.getWidth();
         this.height = Gdx.graphics.getHeight();
-        this.playerList = new ArrayList<Player>();
-        this.playerList.add(me);
+        this.me = me;
+        this.playerMap = new HashMap<String, Player>();
+        this.playerMap.put(me.getAndroidID(), me);
         createSkin();
         createStage();
         createLoadingPopup();
         updateLabelList();
         bindListener();
+        this.playerListUpdatePollingTrigger = true;
+        startPlayerListUpdatePolling(this);
+    }
+
+    private void startPlayerListUpdatePolling(final WaitingRoomScreen waitingRoom){
+        mainGame.getNetworkManager().startPlayerListPolling(waitingRoom, new NetworkManager.NetworkTaskFinishListener(){
+            @Override
+            public void onPlayerListUpdate() {
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLabelList();
+                    }
+                });
+            }
+        });
     }
 
     private void bindListener(){
         leave.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-            super.clicked(event, x, y);
-            stage.addActor(loadingPopupStack);
-            Gdx.app.postRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    mainGame.getNetworkManager().leaveRoom();
-                    mainGame.getScreenManager().transitToWelcomeScreen();
-                }
-            });
+                super.clicked(event, x, y);
+                stage.addActor(loadingPopupStack);
+                playerListUpdatePollingTrigger = false;
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainGame.getScreenManager().transitToWelcomeScreen();
+                    }
+                });
             }
         });
     }
@@ -203,17 +228,14 @@ public class WaitingRoomScreen implements Screen {
         skin.add("popupFrame", atlas.createPatch("gamePopupFrame"));
     }
 
-    public void updateLabelList(){
-        for(Label label : hunterLabelList){
-            label.remove();
-        }
+    private void updateLabelList(){
+        huntersFrame.clearChildren();
         hunterLabelList.clear();
-        for(Label label : hunteeLabelList){
-            label.remove();
-        }
+        hunteesFrame.clearChildren();
         hunteeLabelList.clear();
 
-        for(Player player : playerList){
+        for(String androidId : playerMap.keySet()){
+            Player player = playerMap.get(androidId);
             Label label = new Label(player.getName(), new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
             if(player.getType() == Player.Type.Hunter){
                 huntersFrame.add(label).right().padTop(height*0.02f).padBottom(height*0.02f).row();
@@ -288,5 +310,7 @@ public class WaitingRoomScreen implements Screen {
         stage.dispose();
         skin.dispose();
         batch.dispose();
+        this.playerListUpdatePollingTrigger = false;
+        this.mainGame.getNetworkManager().leaveRoom(roomId);
     }
 }

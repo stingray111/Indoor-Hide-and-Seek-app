@@ -130,9 +130,16 @@ public class WelcomeScreen implements Screen{
                                 Gdx.app.postRunnable(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mainGame.getScreenManager().transitToWaitingRoomScreen(roomId, new Player(Player.Type.Huntee, createRoomName.getText()));
+                                        String androidId = mainGame.getAndroidConnector().getCoordinator().getAndroidId();
+                                        mainGame.getScreenManager().transitToWaitingRoomScreen(roomId, new Player(Player.Type.Huntee, createRoomName.getText(), androidId));
                                     }
                                 });
+                            }
+
+                            @Override
+                            public void onCreateRoomFail(String response) {
+                                loadingPopupStack.remove();
+                                mainGame.getAndroidConnector().getCoordinator().showToast(response);
                             }
                         });
                     }
@@ -156,9 +163,16 @@ public class WelcomeScreen implements Screen{
                                 Gdx.app.postRunnable(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mainGame.getScreenManager().transitToWaitingRoomScreen(joinRoomId.getText(), new Player(Player.Type.Hunter, joinRoomName.getText()));
+                                        String androidId = mainGame.getAndroidConnector().getCoordinator().getAndroidId();
+                                        mainGame.getScreenManager().transitToWaitingRoomScreen(joinRoomId.getText(), new Player(Player.Type.Hunter, joinRoomName.getText(), androidId));
                                     }
                                 });
+                            }
+
+                            @Override
+                            public void onJoinRoomFail(String response) {
+                                loadingPopupStack.remove();
+                                mainGame.getAndroidConnector().getCoordinator().showToast(response);
                             }
                         });
                     }

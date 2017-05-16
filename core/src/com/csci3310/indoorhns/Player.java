@@ -14,14 +14,17 @@ public class Player {
     private Type type;
     private String name;
     private Coordinate coordinate;
+    private String androidID;
 
     public Type getType(){return this.type;}
     public String getName(){return this.name;}
+    public String getAndroidID(){return this.androidID;}
     public Coordinate getCoordinate(){return this.coordinate;}
 
-    public Player(Type type, String name){
+    public Player(Type type, String name, String androidID){
         this.type = type;
         this.name = name;
+        this.androidID = androidID;
         this.coordinate = null;
     }
 

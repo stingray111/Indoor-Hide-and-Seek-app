@@ -22,6 +22,7 @@ public class IndoorHideAndSeek extends Game {
 		this.screenManager = new ScreenManager(this);
 	}
 
+	public AndroidConnector getAndroidConnector(){return this.connector;}
 	public NetworkManager getNetworkManager(){return this.networkManager;}
 	public ScreenManager getScreenManager(){return this.screenManager;}
 
@@ -32,5 +33,10 @@ public class IndoorHideAndSeek extends Game {
 		Gdx.input.setCatchMenuKey(true);
 		this.setScreen(new ScreenManager.BlackScreen());
 		screenManager.transitToWelcomeScreen();
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
 	}
 }

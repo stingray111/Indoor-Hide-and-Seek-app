@@ -38,7 +38,7 @@ public class ScreenManager {
 
         private IndoorHideAndSeek mainGame;
         private Screen currentScreen, nextScreen, blackScreen;
-        private long startTime, lastRenderTime;
+        private long startTime;
         private Sprite fade;
         private SpriteBatch batch;
         private int state;
@@ -51,7 +51,6 @@ public class ScreenManager {
             this.state = -1;
             this.fadeAlpha = 0;
             this.startTime = System.currentTimeMillis();
-            this.lastRenderTime = System.currentTimeMillis();
             this.batch = new SpriteBatch();
             setBackground();
         }
@@ -79,8 +78,13 @@ public class ScreenManager {
         }
 
         private void endTransition(){
-            this.mainGame.setScreen(this.nextScreen);
-            this.dispose();
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    mainGame.setScreen(nextScreen);
+                    dispose();
+                }
+            });
         }
 
         @Override
@@ -105,7 +109,6 @@ public class ScreenManager {
                     this.endTransition();
                 }
             }
-            this.lastRenderTime = System.currentTimeMillis();
         }
 
         @Override

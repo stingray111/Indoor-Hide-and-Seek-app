@@ -2,6 +2,11 @@ package com.csci3310.indoorhns;
 
 import com.badlogic.gdx.Gdx;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import sun.rmi.runtime.Log;
+
 /**
  * Created by Edmund on 5/14/2017.
  */
@@ -15,6 +20,7 @@ public class NetworkManager {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                boolean success = false;
 
 
                 // pretend waiting for network response
@@ -25,7 +31,11 @@ public class NetworkManager {
                 }
 
                 // finally call codes below to inform ui
-                listener.onJoinRoomSuccess();
+                if(success) {
+                    listener.onJoinRoomSuccess();
+                }else{
+                    listener.onJoinRoomFail("I don't know why");
+                }
             }
         }).start();
     }
@@ -35,6 +45,7 @@ public class NetworkManager {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                boolean success = true;
 
 
                 // pretend waiting for network response
@@ -45,19 +56,61 @@ public class NetworkManager {
                 }
 
                 //finally call codes below to inform ui
-                listener.onCreateRoomSuccess("ROOM ID");
+                if(success) {
+                    listener.onCreateRoomSuccess("ROOM ID");
+                }else{
+                    listener.onJoinRoomFail("I don't know why");
+                }
             }
         }).start();
     }
 
-    public void leaveRoom(){
+    public void leaveRoom(String roomId){
         //TO-DO leave room network IO
 
         //finally
         // None, UI will leave waiting room without waiting for server response
     }
 
-    static public class NetworkTaskFinishListener implements JoinRoomSuccessListener, JoinRoomFailListener, CreateRoomSuccessListener, CreateRoomFailListener {
+    public void startPlayerListPolling(final WaitingRoomScreen waitingRoom, final NetworkTaskFinishListener listener){
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                HashMap<String, Player> playerMap = waitingRoom.getPlayerMap();
+                Player me = waitingRoom.getMe();
+
+                int i=0;
+                while(waitingRoom.getPlayerListUpdatePollingTrigger()){
+                    if(i == 0){
+                        playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
+                        i++;
+                    }else if(i == 1){
+                        playerMap.remove("testing0");
+                        i++;
+                    }else if(i == 2){
+                        playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
+                        i++;
+                    }else if(i == 3){
+                        playerMap.put("testing1", new Player(Player.Type.Hunter, "Hunter 1", "testing1"));
+                        i++;
+                    }else{
+                        playerMap.remove("testing0");
+                        playerMap.remove("testing1");
+                        i = 0;
+                    }
+                    listener.onPlayerListUpdate();
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.println("PlayerList Polling Thread Ended");
+            }
+        }).start();
+    }
+
+    static class NetworkTaskFinishListener implements JoinRoomSuccessListener, JoinRoomFailListener, CreateRoomSuccessListener, CreateRoomFailListener, PlayerListUpdateListener {
         @Override
         public void onJoinRoomSuccess() {}
         @Override
@@ -66,21 +119,24 @@ public class NetworkManager {
         public void onJoinRoomFail(String response) {}
         @Override
         public void onCreateRoomFail(String response) {}
+        @Override
+        public void onPlayerListUpdate() {}
     }
 
-    public interface JoinRoomSuccessListener {
+    interface JoinRoomSuccessListener {
         void onJoinRoomSuccess();
     }
-
-    public interface JoinRoomFailListener {
+    interface JoinRoomFailListener {
         void onJoinRoomFail(String response);
     }
-
-    public interface CreateRoomSuccessListener {
+    interface CreateRoomSuccessListener {
         void onCreateRoomSuccess(String roomId);
     }
-
-    public interface CreateRoomFailListener {
+    interface CreateRoomFailListener {
         void onCreateRoomFail(String response);
     }
+    interface PlayerListUpdateListener {
+        void onPlayerListUpdate();
+    }
+
 }
