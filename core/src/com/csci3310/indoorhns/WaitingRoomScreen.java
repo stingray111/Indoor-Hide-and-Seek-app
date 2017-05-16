@@ -66,15 +66,15 @@ public class WaitingRoomScreen implements Screen {
         leave.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                stage.addActor(loadingPopupStack);
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        mainGame.getNetworkManager().leaveRoom();
-                        mainGame.getScreenManager().transitToWelcomeScreen();
-                    }
-                });
+            super.clicked(event, x, y);
+            stage.addActor(loadingPopupStack);
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    mainGame.getNetworkManager().leaveRoom();
+                    mainGame.getScreenManager().transitToWelcomeScreen();
+                }
+            });
             }
         });
     }

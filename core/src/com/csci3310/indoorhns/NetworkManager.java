@@ -25,12 +25,7 @@ public class NetworkManager {
                 }
 
                 // finally call codes below to inform ui
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onJoinRoomFinish();
-                    }
-                });
+                listener.onJoinRoomSuccess();
             }
         }).start();
     }
@@ -50,12 +45,7 @@ public class NetworkManager {
                 }
 
                 //finally call codes below to inform ui
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onCreateRoomFinish("ROOM ID");
-                    }
-                });
+                listener.onCreateRoomSuccess("ROOM ID");
             }
         }).start();
     }
@@ -67,18 +57,30 @@ public class NetworkManager {
         // None, UI will leave waiting room without waiting for server response
     }
 
-    static public class NetworkTaskFinishListener implements JoinRoomFinishListener, CreateRoomFinishListener{
+    static public class NetworkTaskFinishListener implements JoinRoomSuccessListener, JoinRoomFailListener, CreateRoomSuccessListener, CreateRoomFailListener {
         @Override
-        public void onJoinRoomFinish() {}
+        public void onJoinRoomSuccess() {}
         @Override
-        public void onCreateRoomFinish(String roomId) {}
+        public void onCreateRoomSuccess(String roomId) {}
+        @Override
+        public void onJoinRoomFail(String response) {}
+        @Override
+        public void onCreateRoomFail(String response) {}
     }
 
-    public interface JoinRoomFinishListener {
-        void onJoinRoomFinish();
+    public interface JoinRoomSuccessListener {
+        void onJoinRoomSuccess();
     }
 
-    public interface CreateRoomFinishListener {
-        void onCreateRoomFinish(String roomId);
+    public interface JoinRoomFailListener {
+        void onJoinRoomFail(String response);
+    }
+
+    public interface CreateRoomSuccessListener {
+        void onCreateRoomSuccess(String roomId);
+    }
+
+    public interface CreateRoomFailListener {
+        void onCreateRoomFail(String response);
     }
 }

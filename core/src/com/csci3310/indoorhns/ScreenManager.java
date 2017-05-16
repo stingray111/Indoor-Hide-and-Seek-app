@@ -35,10 +35,9 @@ public class ScreenManager {
 
     static public class TransitionScreen implements Screen {
         private final float TRANSITION_TIME = 500; //1000 ms
-        private final float TRANSITION_DELAY = 10; //10ms
 
         private IndoorHideAndSeek mainGame;
-        private Screen currentScreen, nextScreen;
+        private Screen currentScreen, nextScreen, blackScreen;
         private long startTime, lastRenderTime;
         private Sprite fade;
         private SpriteBatch batch;

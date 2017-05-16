@@ -126,8 +126,13 @@ public class WelcomeScreen implements Screen{
                     public void run() {
                         mainGame.getNetworkManager().createRoom(new NetworkManager.NetworkTaskFinishListener(){
                             @Override
-                            public void onCreateRoomFinish(String roomId) {
-                                mainGame.getScreenManager().transitToWaitingRoomScreen(roomId, new Player(Player.Type.Huntee, createRoomName.getText()));
+                            public void onCreateRoomSuccess(final String roomId) {
+                                Gdx.app.postRunnable(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mainGame.getScreenManager().transitToWaitingRoomScreen(roomId, new Player(Player.Type.Huntee, createRoomName.getText()));
+                                    }
+                                });
                             }
                         });
                     }
@@ -147,8 +152,13 @@ public class WelcomeScreen implements Screen{
                     public void run() {
                         mainGame.getNetworkManager().joinRoom(joinRoomId.getText(), new NetworkManager.NetworkTaskFinishListener(){
                             @Override
-                            public void onJoinRoomFinish() {
-                                mainGame.getScreenManager().transitToWaitingRoomScreen(joinRoomId.getText(), new Player(Player.Type.Hunter, joinRoomName.getText()));
+                            public void onJoinRoomSuccess() {
+                                Gdx.app.postRunnable(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mainGame.getScreenManager().transitToWaitingRoomScreen(joinRoomId.getText(), new Player(Player.Type.Hunter, joinRoomName.getText()));
+                                    }
+                                });
                             }
                         });
                     }
