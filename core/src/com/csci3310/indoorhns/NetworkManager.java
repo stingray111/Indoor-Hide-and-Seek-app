@@ -80,24 +80,33 @@ public class NetworkManager {
 
                 int i=0;
                 while(waitingRoom.getPlayerListUpdatePollingTrigger()){
-                    if(i == 0){
+//                    if(i == 0){
+//                        playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
+//                        i++;
+//                    }else if(i == 1){
+//                        playerMap.remove("testing0");
+//                        i++;
+//                    }else if(i == 2){
+//                        playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
+//                        i++;
+//                    }else if(i == 3){
+//                        playerMap.put("testing1", new Player(Player.Type.Hunter, "Hunter 1", "testing1"));
+//                        i++;
+//                    }else{
+//                        playerMap.remove("testing0");
+//                        playerMap.remove("testing1");
+//                        i = 0;
+//                    }
+                    if(i == 0) {
                         playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
-                        i++;
-                    }else if(i == 1){
-                        playerMap.remove("testing0");
-                        i++;
-                    }else if(i == 2){
-                        playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
-                        i++;
-                    }else if(i == 3){
                         playerMap.put("testing1", new Player(Player.Type.Hunter, "Hunter 1", "testing1"));
+                        playerMap.put("testing2", new Player(Player.Type.Hunter, "Hunter 2", "testing2"));
                         i++;
-                    }else{
-                        playerMap.remove("testing0");
-                        playerMap.remove("testing1");
-                        i = 0;
                     }
                     listener.onPlayerListUpdate();
+                    if(true/*list is full*/){
+                        listener.onPlayerListFull();
+                    }
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
@@ -109,7 +118,7 @@ public class NetworkManager {
         }).start();
     }
 
-    static class NetworkTaskFinishListener implements JoinRoomSuccessListener, JoinRoomFailListener, CreateRoomSuccessListener, CreateRoomFailListener, PlayerListUpdateListener {
+    static class NetworkTaskFinishListener implements JoinRoomSuccessListener, JoinRoomFailListener, CreateRoomSuccessListener, CreateRoomFailListener, PlayerListUpdateListener, PlayerListFullListener {
         @Override
         public void onJoinRoomSuccess() {}
         @Override
@@ -120,6 +129,8 @@ public class NetworkManager {
         public void onCreateRoomFail(String response) {}
         @Override
         public void onPlayerListUpdate() {}
+        @Override
+        public void onPlayerListFull() {}
     }
 
     interface JoinRoomSuccessListener {
@@ -136,6 +147,9 @@ public class NetworkManager {
     }
     interface PlayerListUpdateListener {
         void onPlayerListUpdate();
+    }
+    interface PlayerListFullListener{
+        void onPlayerListFull();
     }
 
 }
