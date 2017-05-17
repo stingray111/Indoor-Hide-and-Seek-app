@@ -68,7 +68,6 @@ public class IndoorHnSLauncher extends AndroidApplication implements AndroidConn
 		return wifiScanReceiver.getResultList();
 	}
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
