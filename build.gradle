@@ -61,6 +61,9 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        compile 'com.squareup.retrofit2:retrofit:2.1.0'
+        compile 'com.squareup.okhttp:okhttp:2.4.0'
+        compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     }
 }
 
