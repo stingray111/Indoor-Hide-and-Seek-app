@@ -61,7 +61,7 @@ public class WaitingRoomScreen implements Screen {
     public HashMap<String, Player> getPlayerMap(){return this.playerMap;};
     public Player getMe(){return this.me;}
 
-    public WaitingRoomScreen(final IndoorHideAndSeek mainGame, int roomId, Player me){
+    public WaitingRoomScreen(final IndoorHideAndSeek mainGame, final int roomId, final Player me){
         this.mainGame = mainGame;
         this.roomId = roomId;
         this.width = Gdx.graphics.getWidth();
@@ -96,7 +96,7 @@ public class WaitingRoomScreen implements Screen {
 
             @Override
             public void onCountdownTimerSet() {
-                mainGame.getScreenManager().transitToWelcomeScreen();
+                mainGame.getScreenManager().transitToGameScreen(roomId, me, playerMap);
             }
         });
     }

@@ -39,7 +39,7 @@ public class NetworkManager {
         }).start();
     }
 
-    public void createRoom(final NetworkTaskFinishListener listener){
+    public void createRoom(String text, final NetworkTaskFinishListener listener){
         //TO-DO create room network IO
         new Thread(new Runnable() {
             @Override
@@ -101,10 +101,6 @@ public class NetworkManager {
                         playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
                         playerMap.put("testing1", new Player(Player.Type.Hunter, "Hunter 1", "testing1"));
                         playerMap.put("testing2", new Player(Player.Type.Hunter, "Hunter 2", "testing2"));
-                    }else if(i == 5){
-                        playerMap.remove("testing0");
-                    }else if(i == 7){
-                        i = -1;
                     }
                     listener.onPlayerListUpdate();
                     i++;

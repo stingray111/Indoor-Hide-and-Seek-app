@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.HashMap;
+
 /**
  * Created by Edmund on 5/14/2017.
  */
@@ -31,13 +33,18 @@ public class ScreenManager {
         this.mainGame.setScreen(transition);
     }
 
+    public void transitToGameScreen(int roomId, Player me, HashMap<String, Player> playerMap){
+        TransitionScreen transition = new TransitionScreen(mainGame, new GameScreen(mainGame, roomId, me, playerMap));
+        this.mainGame.setScreen(transition);
+    }
+
 
 
     static public class TransitionScreen implements Screen {
         private final float TRANSITION_TIME = 500; //1000 ms
 
         private IndoorHideAndSeek mainGame;
-        private Screen currentScreen, nextScreen, blackScreen;
+        private Screen currentScreen, nextScreen;
         private long startTime;
         private Sprite fade;
         private SpriteBatch batch;

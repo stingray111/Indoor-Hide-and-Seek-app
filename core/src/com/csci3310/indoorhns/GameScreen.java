@@ -10,14 +10,25 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Align;
+
+import java.util.HashMap;
+
+import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 
 /**
  * Created by edmund on 17/5/2017.
@@ -25,29 +36,77 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 public class GameScreen implements Screen {
 
+    final private static Color[] HunterColorList = new Color[]{Color.GREEN, Color.ORANGE, Color.RED};
+    final private static Color HunteeColor = Color.WHITE;
+    final private static int[] HunterRadiusList = new int[]{30, 25, 20};
+    final private static int HunteeRadius = 40;
+
     private IndoorHideAndSeek mainGame;
     private int roomId;
     private Player me;
+    private HashMap<String, Player> playerMap;
 
     private int width, height;
+    private float floor9ImageRatio, floor10ImageRatio;
 
     private Stage stage;
     private Skin skin;
-    private Image floor09, floor10;
-    private Button endGame;
+    private Group floor9Group, floor10Group;
+    private Image floor9, floor10;
+    private Label floor9Label, floor10Label;
+    private TextButton endGame;
     private SpriteBatch batch;
     private Sprite background;
 
+    private HashMap<String, Image> playerIndicatorMap;
 
-    public GameScreen(IndoorHideAndSeek mainGame, int roomId, Player me){
+    private GamePointCoordinateConverter coordConverter;
+
+    private HashMap<String, String> fakeHashMap;
+
+
+
+    public GameScreen(IndoorHideAndSeek mainGame, int roomId, Player me, HashMap<String, Player> playerMap){
         this.mainGame = mainGame;
         this.roomId = roomId;
         this.me = me;
+        this.playerMap = playerMap;
         this.width = Gdx.graphics.getWidth();
         this.height = Gdx.graphics.getHeight();
-        createStage();
+        this.coordConverter = new GamePointCoordinateConverter();
+        calculateImageRatio();
         createSkin();
+        createStage();
         bindListener();
+        fakeHashMap = new HashMap<String, String>();
+        fakeHashMap.put("testing0", "09R4");
+        fakeHashMap.put("testing1", "09R4");
+        fakeHashMap.put("testing2", "09R4");
+        fakeHashMap.put(me.getAndroidID(), "09R4");
+        updatePlayerCoordinate(fakeHashMap);
+    }
+
+    public void updatePlayerCoordinate(HashMap<String, String> playerPointMap){
+        if(playerPointMap == null)return;
+        for(String androidId : playerPointMap.keySet()){
+            String point = playerPointMap.get(androidId);
+            Coordinate newCoord = coordConverter.getCoordinate(point);
+            if(newCoord == null)continue;
+            int floor = coordConverter.getFloor(point);
+            float ratio = floor == 9 ? floor9ImageRatio : floor10ImageRatio;
+            float offsetX = floor == 9 ? floor9.getX() : floor10.getX();
+            Player player = playerMap.get(androidId);
+            Image indicator = playerIndicatorMap.get(androidId);
+            player.getCoordinate().setCoordinate(offsetX + newCoord.getX() * ratio - indicator.getWidth()/2, newCoord.getY() * ratio - indicator.getHeight()/2);
+            indicator.remove();
+            indicator.setPosition(player.getCoordinate().getX(), player.getCoordinate().getY());
+            if(me.getType() == Player.Type.Hunter && player.getType() == Player.Type.Huntee)continue;
+            if(floor == 9){
+                floor9Group.addActor(playerIndicatorMap.get(androidId));
+            }else{
+                floor10Group.addActor(playerIndicatorMap.get(androidId));
+            }
+        }
     }
 
     private void createStage() {
@@ -66,10 +125,68 @@ public class GameScreen implements Screen {
 //        background = new Sprite(new Texture(Gdx.files.internal("background.png")));
 
         // floor 9
-        floor09 = new Image(new Texture(Gdx.files.internal("09_blue.png")));
+        floor9 = new Image(new Texture(Gdx.files.internal("09_blue.png")));
+        floor9.setSize(floor9.getPrefWidth()*floor9ImageRatio, floor9.getPrefHeight()*floor9ImageRatio);
+        floor9.setPosition((width - floor9.getWidth())/2, (height - floor9.getHeight())/2);
+
+        //floor9 label
+        floor9Label = new Label("Floor 9", new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
+        floor9Label.setPosition(0, height - floor9Label.getHeight());
+
+        //floor 9 stack
+        floor9Group = new Group();
+//        floor9Group.setBounds(floor9.getX(), floor9.getY(), floor9.getWidth(), floor9.getHeight());
+        floor9Group.addActor(floor9);
+        floor9Group.addActor(floor9Label);
+        stage.addActor(floor9Group);
 
         // floor 10
         floor10 = new Image(new Texture(Gdx.files.internal("10_blue.png")));
+        floor10.setSize(floor10.getPrefWidth()*floor10ImageRatio, floor10.getPrefHeight()*floor10ImageRatio);
+        floor10.setPosition((width - floor10.getWidth())/2, (height - floor10.getHeight())/2);
+
+        //floor10 label
+        floor10Label = new Label("Floor 10", new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
+        floor10Label.setPosition(0, height - floor10Label.getHeight());
+
+        //floor10 stack
+        floor10Group = new Group();
+//        floor10Group.setBounds(floor10.getX(), floor10.getY(), floor10.getWidth(), floor10.getHeight());
+        floor10Group.addActor(floor10);
+        floor10Group.addActor(floor10Label);
+
+        // end button
+        endGame = new TextButton("Caught", skin.get("button", TextButton.TextButtonStyle.class));
+        endGame.setPosition(width - endGame.getWidth(), height-endGame.getHeight());
+        if(me.getType() == Player.Type.Huntee) {
+            stage.addActor(endGame);
+        }
+
+        // player circle indicator
+        playerIndicatorMap = new HashMap<String, Image>();
+        int loopCnt = 0;
+        for(String androidId : playerMap.keySet()){
+            if(playerMap.get(androidId).getType() == Player.Type.Hunter) {
+                int radius = HunterRadiusList[loopCnt];
+                pixmap = new Pixmap(radius * 2, radius * 2, RGBA8888);
+                pixmap.setColor(HunterColorList[loopCnt]);
+                for(int i=0; i<4; i++){
+                    pixmap.drawCircle(radius, radius, radius-i);
+                }
+                loopCnt++;
+            }else{
+                pixmap = new Pixmap(HunteeRadius * 2, HunteeRadius * 2, RGBA8888);
+                pixmap.setColor(HunteeColor);
+                for(int i=0; i<4; i++){
+                    pixmap.drawCircle(HunteeRadius, HunteeRadius, HunteeRadius-i);
+                }
+
+            }
+            Image image = new Image(new Texture(pixmap));
+            pixmap.dispose();
+            image.setSize(image.getPrefWidth(), image.getPrefHeight());
+            playerIndicatorMap.put(androidId, image);
+        }
 
     }
 
@@ -99,7 +216,7 @@ public class GameScreen implements Screen {
         skin.add("button", style);
 
         //textfield
-        Pixmap pixmap = new Pixmap((int)Math.floor(skin.getFont("text").getSpaceWidth()), (int)Math.floor(skin.getFont("text").getLineHeight()), Pixmap.Format.RGBA8888);
+        Pixmap pixmap = new Pixmap((int)Math.floor(skin.getFont("text").getSpaceWidth()), (int)Math.floor(skin.getFont("text").getLineHeight()), RGBA8888);
         pixmap.setColor(0, 0, 0, 0);
         pixmap.fill();
         pixmap.setColor(Color.WHITE);
@@ -120,8 +237,53 @@ public class GameScreen implements Screen {
         skin.add("popupFrame", atlas.createPatch("gamePopupFrame"));
     }
 
-    private void bindListener() {
+    private void calculateImageRatio(){
+        // floor 9 - original image height : 451
+        floor9ImageRatio = height / 451f;
+        // floor 10 - original image height: 882
+        floor10ImageRatio = height / 882f;
+    }
 
+    private void bindListener() {
+        floor9.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        floor9Group.remove();
+                        stage.addActor(floor10Group);
+                    }
+                });
+            }
+        });
+        floor10.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        floor10Group.remove();
+                        stage.addActor(floor9Group);
+                    }
+                });
+            }
+        });
+        endGame.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                // mainGame.getNetworkManager().endGame(roomId);
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainGame.getScreenManager().transitToWelcomeScreen();
+                    }
+                });
+            }
+        });
     }
 
     @Override
