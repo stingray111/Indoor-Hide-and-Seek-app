@@ -66,7 +66,7 @@ public class WelcomeScreen implements Screen{
         createJoinRoomPopup();
         createLoadingPopup();
         bindListener();
-        mainGame.getAndroidConnector().getCoordinator().startWifiScan();
+        //mainGame.getAndroidConnector().getCoordinator().startWifiScan();
     }
 
     private void bindListener() {
@@ -467,6 +467,6 @@ public class WelcomeScreen implements Screen{
         stage.dispose();
         skin.dispose();
         batch.dispose();
-        mainGame.getAndroidConnector().getCoordinator().stopWifiScan();
+        //mainGame.getAndroidConnector().getCoordinator().stopWifiScan();
     }
 }

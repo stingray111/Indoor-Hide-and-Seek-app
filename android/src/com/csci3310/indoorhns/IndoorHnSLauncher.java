@@ -1,11 +1,18 @@
 package com.csci3310.indoorhns;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -15,19 +22,43 @@ import java.util.ArrayList;
 
 public class IndoorHnSLauncher extends AndroidApplication implements AndroidConnector.AndroidConnectorCoordinator {
 	final Context context = this;
+    private static final int PERMISSION_REQUEST_CODE =23143;
 	IndoorHideAndSeek game;
 	WifiScanReceiver wifiScanReceiver;
+	private LocationManager mLocationManager;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		AndroidConnector connector = new AndroidConnector(this);
-		wifiScanReceiver = new WifiScanReceiver(this);
-        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		game = new IndoorHideAndSeek(connector);
-		initialize(game, config);
+        /*
+		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		if(!validPermission()){
+			getPermission();
+		}else{
+        }
+        */
+        //init();
+
+
+        super.onCreate(savedInstanceState);
+
+        if(!validPermission()){
+            getPermission();
+            Log.d("here","1 not valid permission");
+        }else {
+            Log.d("here","content");
+            wifiInit();
+        }
+        AndroidConnector connector = new AndroidConnector(this);
+        AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+        game = new IndoorHideAndSeek(connector);
+        initialize(game, config);
 	}
+
+	private void wifiInit(){
+        wifiScanReceiver = new WifiScanReceiver(this);
+        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+    }
+
 
 	@Override
 	public void test() {
@@ -70,7 +101,37 @@ public class IndoorHnSLauncher extends AndroidApplication implements AndroidConn
 
     @Override
     protected void onDestroy() {
+        //unregisterReceiver(wifiScanReceiver);
         super.onDestroy();
-        unregisterReceiver(wifiScanReceiver);
     }
+
+	public void getPermission(){
+		String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION};
+		requestPermissions(permissions,PERMISSION_REQUEST_CODE);
+	}
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+         if(requestCode == PERMISSION_REQUEST_CODE){
+            if(!validPermission()){
+                Log.d("here","2 not valid permission");
+                finish();
+            }else{
+                wifiInit();
+            }
+        }
+    }
+
+    public boolean validPermission(){
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+			return true;
+		} else{
+			return false;
+		}
+
+	}
+
+
 }
