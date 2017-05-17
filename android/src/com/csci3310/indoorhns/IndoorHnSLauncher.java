@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -43,9 +42,7 @@ public class IndoorHnSLauncher extends AndroidApplication implements AndroidConn
 
         if(!validPermission()){
             getPermission();
-            Log.d("here","1 not valid permission");
         }else {
-            Log.d("here","content");
             wifiInit();
         }
         AndroidConnector connector = new AndroidConnector(this);
@@ -115,7 +112,6 @@ public class IndoorHnSLauncher extends AndroidApplication implements AndroidConn
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
          if(requestCode == PERMISSION_REQUEST_CODE){
             if(!validPermission()){
-                Log.d("here","2 not valid permission");
                 finish();
             }else{
                 wifiInit();
