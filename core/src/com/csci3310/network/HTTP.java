@@ -7,7 +7,6 @@ import com.csci3310.network.model.PushLocationLabelRequest;
 import com.csci3310.network.model.RoomId;
 import com.csci3310.network.model.StartGameResponse;
 import com.csci3310.network.model.Success;
-import com.oracle.webservices.internal.api.message.PropertySet;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +44,7 @@ public interface HTTP {
 
     @POST("/pushLocationLabel")
     Call<PushLocationLabelRequest> pushLocationLabel(
-            @Body Success success;
+            @Body Success success
     );
 
     final OkHttpClient okHttpClient = new OkHttpClient.Builder()
