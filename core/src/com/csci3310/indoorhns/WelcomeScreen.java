@@ -2,6 +2,7 @@ package com.csci3310.indoorhns;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -179,6 +181,9 @@ public class WelcomeScreen implements Screen{
                 });
             }
         });
+        joinRoomId.setOnscreenKeyboard(new NativeInputBox(joinRoomId, "Input Room ID", null));
+        joinRoomName.setOnscreenKeyboard(new NativeInputBox(joinRoomName, "Input Player Name", null));
+        createRoomName.setOnscreenKeyboard(new NativeInputBox(createRoomName, "Input Player Name", null));
     }
 
     private void createStage() {

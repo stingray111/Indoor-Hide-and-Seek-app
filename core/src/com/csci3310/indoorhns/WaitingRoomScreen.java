@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.IntAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -35,6 +36,9 @@ import java.util.HashMap;
 
 public class WaitingRoomScreen implements Screen {
 
+    final static float CountdownTime = 30f;
+    final static int RoomFullLimit = 4;
+
     private IndoorHideAndSeek mainGame;
     private String roomId;
 
@@ -43,20 +47,21 @@ public class WaitingRoomScreen implements Screen {
     private Skin skin;
     private SpriteBatch batch;
     private Sprite background;
-    private Table mainFrame, roomIdFrame, huntersFrame, hunteesFrame;
+    private Table mainFrame, roomIdFrame, huntersFrame, hunteesFrame, countdownPopupFrame;
     private TextButton leave;
-    private Label roomIdTextLabel, roomIdLabel, isHuntingLabel, loadingPopupLabel;
-    private Stack loadingPopupStack;
+    private Label roomIdTextLabel, roomIdLabel, isHuntingLabel, loadingPopupLabel, countdownPopupTextLabel, countdownPopupLabel;
+    private Stack loadingPopupStack, countdownPopupStack;
     private ArrayList<Label> hunterLabelList, hunteeLabelList;
     private HashMap<String, Player> playerMap;
     private Player me;
     private boolean playerListUpdatePollingTrigger;
+    private CountdownTimer timer;
 
     public boolean getPlayerListUpdatePollingTrigger(){return this.playerListUpdatePollingTrigger;}
     public HashMap<String, Player> getPlayerMap(){return this.playerMap;};
     public Player getMe(){return this.me;}
 
-    public WaitingRoomScreen(IndoorHideAndSeek mainGame, String roomId, Player me){
+    public WaitingRoomScreen(final IndoorHideAndSeek mainGame, String roomId, Player me){
         this.mainGame = mainGame;
         this.roomId = roomId;
         this.width = Gdx.graphics.getWidth();
@@ -67,10 +72,33 @@ public class WaitingRoomScreen implements Screen {
         createSkin();
         createStage();
         createLoadingPopup();
+        createCountdownPopupStack();
         updateLabelList();
         bindListener();
         this.playerListUpdatePollingTrigger = true;
         startPlayerListUpdatePolling(this);
+        this.timer = new CountdownTimer(CountdownTime, new CountdownTimer.CountdownTimerListener() {
+
+            @Override
+            public void onCountdownTimerStart() {
+                stage.addActor(countdownPopupStack);
+            }
+
+            @Override
+            public void onCountdownTimerStep() {
+                countdownPopupLabel.setText(timer.timeToString());
+            }
+
+            @Override
+            public void onCountdownTimerInterrupt() {
+                countdownPopupStack.remove();
+            }
+
+            @Override
+            public void onCountdownTimerSet() {
+                mainGame.getScreenManager().transitToWelcomeScreen();
+            }
+        });
     }
 
     private void startPlayerListUpdatePolling(final WaitingRoomScreen waitingRoom){
@@ -81,6 +109,14 @@ public class WaitingRoomScreen implements Screen {
                     @Override
                     public void run() {
                         updateLabelList();
+                        if(playerMap.size() == RoomFullLimit){
+                            if(!timer.isRunning()) {
+                                timer.start();
+                            }
+                        }
+                        if(timer.isRunning() && playerMap.size() < RoomFullLimit){
+                            timer.interrupt();
+                        }
                     }
                 });
             }
@@ -130,7 +166,7 @@ public class WaitingRoomScreen implements Screen {
 
         //roomId Frame
         roomIdFrame = new Table();
-        mainFrame.add(roomIdFrame).colspan(3)  .expandX().center().row();
+        mainFrame.add(roomIdFrame).colspan(3).expandX().center().row();
 
         //roomId Text Label
         roomIdTextLabel = new Label("Room ID: ", new Label.LabelStyle(skin.getFont("title"), Color.CYAN));
@@ -159,6 +195,30 @@ public class WaitingRoomScreen implements Screen {
 
         //huntee label list
         hunteeLabelList = new ArrayList<Label>();
+    }
+
+    private void createCountdownPopupStack(){
+        // countdown popup stack
+        countdownPopupStack = new Stack();
+        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        pixmap.setColor(0, 0, 0, 0.9f);
+        pixmap.fill();
+        countdownPopupStack.add(new Image(new SpriteDrawable(new Sprite(new Texture(pixmap)))));
+        pixmap.dispose();
+
+        countdownPopupStack.setBounds(0, 0, width, height);
+
+        // countdown popup frame
+        countdownPopupFrame = new Table();
+        countdownPopupStack.add(countdownPopupFrame);
+
+        //countdown popup text label
+        countdownPopupTextLabel = new Label("Game Starts in", new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
+        countdownPopupFrame.add(countdownPopupTextLabel).padBottom(height*0.05f).row();
+
+        //countdown popup label
+        countdownPopupLabel = new Label(" ", new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
+        countdownPopupFrame.add(countdownPopupLabel).row();
     }
 
     private void createLoadingPopup(){
@@ -277,12 +337,14 @@ public class WaitingRoomScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (timer.isRunning()) {
+            timer.step(delta);
+        }
         batch.begin();
         background.draw(batch);
         batch.end();
         stage.act(delta);
         stage.draw();
-
     }
 
     @Override
