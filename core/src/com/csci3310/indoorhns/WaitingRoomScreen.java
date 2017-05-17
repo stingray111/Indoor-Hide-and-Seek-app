@@ -55,13 +55,13 @@ public class WaitingRoomScreen implements Screen {
     private HashMap<String, Player> playerMap;
     private Player me;
     private boolean playerListUpdatePollingTrigger;
-    private float countdownTimer;
+    private CountdownTimer timer;
 
     public boolean getPlayerListUpdatePollingTrigger(){return this.playerListUpdatePollingTrigger;}
     public HashMap<String, Player> getPlayerMap(){return this.playerMap;};
     public Player getMe(){return this.me;}
 
-    public WaitingRoomScreen(IndoorHideAndSeek mainGame, String roomId, Player me){
+    public WaitingRoomScreen(final IndoorHideAndSeek mainGame, String roomId, Player me){
         this.mainGame = mainGame;
         this.roomId = roomId;
         this.width = Gdx.graphics.getWidth();
@@ -77,7 +77,28 @@ public class WaitingRoomScreen implements Screen {
         bindListener();
         this.playerListUpdatePollingTrigger = true;
         startPlayerListUpdatePolling(this);
-        this.countdownTimer = 0;
+        this.timer = new CountdownTimer(CountdownTime, new CountdownTimer.CountdownTimerListener() {
+
+            @Override
+            public void onCountdownTimerStart() {
+                stage.addActor(countdownPopupStack);
+            }
+
+            @Override
+            public void onCountdownTimerStep() {
+                countdownPopupLabel.setText(timer.timeToString());
+            }
+
+            @Override
+            public void onCountdownTimerInterrupt() {
+                countdownPopupStack.remove();
+            }
+
+            @Override
+            public void onCountdownTimerSet() {
+                mainGame.getScreenManager().transitToWelcomeScreen();
+            }
+        });
     }
 
     private void startPlayerListUpdatePolling(final WaitingRoomScreen waitingRoom){
@@ -88,49 +109,18 @@ public class WaitingRoomScreen implements Screen {
                     @Override
                     public void run() {
                         updateLabelList();
-                        if(countdownTimer > 0 && playerMap.size() < RoomFullLimit){
-                            stopCountdown();
+                        if(playerMap.size() == RoomFullLimit){
+                            if(!timer.isRunning()) {
+                                timer.start();
+                            }
                         }
-                    }
-                });
-            }
-            @Override
-            public void onPlayerListFull() {
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(countdownTimer == 0) {
-                            startCountdown();
+                        if(timer.isRunning() && playerMap.size() < RoomFullLimit){
+                            timer.interrupt();
                         }
                     }
                 });
             }
         });
-    }
-
-    private void startCountdown(){
-        countdownTimer = CountdownTime;
-        stage.addActor(countdownPopupStack);
-        countdownPopupLabel.setText(Integer.toString((int)countdownTimer));
-    }
-
-    private void updateCountdown(float delta){
-        countdownTimer -= delta;
-        if(countdownTimer < 0){
-            countdownTimer = 0;
-            Gdx.app.postRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    mainGame.getScreenManager().transitToWelcomeScreen();
-                }
-            });
-        }
-        countdownPopupLabel.setText(Integer.toString((int)countdownTimer));
-    }
-
-    private void stopCountdown(){
-        countdownTimer = 0f;
-        countdownPopupStack.remove();
     }
 
     private void bindListener(){
@@ -347,8 +337,8 @@ public class WaitingRoomScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (mainGame.getScreen() instanceof WaitingRoomScreen && countdownTimer > 0) {
-            updateCountdown(delta);
+        if (timer.isRunning()) {
+            timer.step(delta);
         }
         batch.begin();
         background.draw(batch);
