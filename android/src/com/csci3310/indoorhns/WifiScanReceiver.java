@@ -23,9 +23,9 @@ public class WifiScanReceiver extends BroadcastReceiver {
 
     public WifiScanReceiver(Context context) {
         wifiManager = (WifiManager) context.getSystemService (Context.WIFI_SERVICE);
-        this.keepScanning = true;
-        this.scanning = true;
-        wifiManager.startScan();
+        this.resultList = new ArrayList<WifiFingerprint>();
+        this.keepScanning = false;
+        this.scanning = false;
     }
 
     public boolean isScanning(){return scanning;}
@@ -46,10 +46,12 @@ public class WifiScanReceiver extends BroadcastReceiver {
     @SuppressLint("UseValueOf")
     public void onReceive(Context c, Intent intent) {
         List<ScanResult> scanReusltList = wifiManager.getScanResults();
+        System.out.println("OnReceive: "+scanReusltList.size());
         this.resultList.clear(); //add this
         for (int i = 0; i < scanReusltList.size(); i++) {
             ScanResult result = scanReusltList.get(i);
             //use add here:
+            System.out.println(result.toString());
             resultList.add(new WifiFingerprint(result.BSSID, result.level)); //append to the other data
         }
         if(keepScanning) {
@@ -57,6 +59,5 @@ public class WifiScanReceiver extends BroadcastReceiver {
         }else{
             scanning = false;
         }
-        System.out.println("OnReceive");
     }
 }

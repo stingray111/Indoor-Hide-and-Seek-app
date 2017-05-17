@@ -9,16 +9,16 @@ import retrofit2.http.POST;
  */
 
 public interface HTTP2 {
-    @GET("/track")
-    Call<ABC> getXXXX(Track req);
-
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://ml.internalpositioning.com/")
-            .build();
-
-    HTTP2 service = retrofit.create(GitHubService.class);
-    Call<ABC> call = service.getXXXX(fdjsfk);
-    call
+//    @GET("/track")
+//    Call<ABC> getXXXX(Track req);
+//
+//    Retrofit retrofit = new Retrofit.Builder()
+//            .baseUrl("https://ml.internalpositioning.com/")
+//            .build();
+//
+//    HTTP2 service = retrofit.create(GitHubService.class);
+//    Call<ABC> call = service.getXXXX(fdjsfk);
+//    call
 
 
 }

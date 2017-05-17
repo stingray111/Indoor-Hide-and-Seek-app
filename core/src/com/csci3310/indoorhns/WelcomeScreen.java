@@ -439,12 +439,7 @@ public class WelcomeScreen implements Screen{
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.act(delta);
         stage.draw();
-        ArrayList<WifiFingerprint> resultList = mainGame.getAndroidConnector().getCoordinator().getWifiScanResult();
-        if(resultList != null) {
-            for (WifiFingerprint fingerprint : resultList) {
-                System.out.println("MAC: " + fingerprint.macAddress + "\tRSSI: " + fingerprint.rssi);
-            }
-        }
+
     }
 
     @Override

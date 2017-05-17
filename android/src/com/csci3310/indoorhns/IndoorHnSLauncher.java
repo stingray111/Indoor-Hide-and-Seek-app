@@ -1,6 +1,7 @@
 package com.csci3310.indoorhns;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ public class IndoorHnSLauncher extends AndroidApplication implements AndroidConn
 		super.onCreate(savedInstanceState);
 		AndroidConnector connector = new AndroidConnector(this);
 		wifiScanReceiver = new WifiScanReceiver(this);
+        registerReceiver(wifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		game = new IndoorHideAndSeek(connector);
 		initialize(game, config);
@@ -54,7 +56,6 @@ public class IndoorHnSLauncher extends AndroidApplication implements AndroidConn
 			wifiScanReceiver.setKeepScanning(true);
 			wifiScanReceiver.startScan();
 		}
-		System.out.println("Wifi Start Scanning");
 	}
 
 	@Override
@@ -68,4 +69,9 @@ public class IndoorHnSLauncher extends AndroidApplication implements AndroidConn
 	}
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(wifiScanReceiver);
+    }
 }
