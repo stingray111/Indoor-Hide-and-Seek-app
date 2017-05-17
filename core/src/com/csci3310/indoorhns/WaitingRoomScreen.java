@@ -40,7 +40,7 @@ public class WaitingRoomScreen implements Screen {
     final static int RoomFullLimit = 4;
 
     private IndoorHideAndSeek mainGame;
-    private String roomId;
+    private int roomId;
 
     private int width, height;
     private Stage stage;
@@ -61,7 +61,7 @@ public class WaitingRoomScreen implements Screen {
     public HashMap<String, Player> getPlayerMap(){return this.playerMap;};
     public Player getMe(){return this.me;}
 
-    public WaitingRoomScreen(final IndoorHideAndSeek mainGame, String roomId, Player me){
+    public WaitingRoomScreen(final IndoorHideAndSeek mainGame, int roomId, Player me){
         this.mainGame = mainGame;
         this.roomId = roomId;
         this.width = Gdx.graphics.getWidth();
@@ -173,7 +173,7 @@ public class WaitingRoomScreen implements Screen {
         roomIdFrame.add(roomIdTextLabel);
 
         //roomId Label
-        roomIdLabel = new Label(roomId, new Label.LabelStyle(skin.getFont("title"), Color.CYAN));
+        roomIdLabel = new Label(Integer.toString(roomId), new Label.LabelStyle(skin.getFont("title"), Color.CYAN));
         roomIdFrame.add(roomIdLabel);
 
         //hunters Frame

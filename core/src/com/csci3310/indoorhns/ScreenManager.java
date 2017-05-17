@@ -26,7 +26,7 @@ public class ScreenManager {
         mainGame.setScreen(transition);
     }
 
-    public void transitToWaitingRoomScreen(String roomId, Player me){
+    public void transitToWaitingRoomScreen(int roomId, Player me){
         TransitionScreen transition = new TransitionScreen(mainGame, new WaitingRoomScreen(mainGame, roomId, me));
         this.mainGame.setScreen(transition);
     }

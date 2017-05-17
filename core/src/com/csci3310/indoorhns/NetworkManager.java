@@ -14,7 +14,7 @@ public class NetworkManager {
 
     final static public String server = "http://localhost/";
 
-    public void joinRoom(String roomId, final NetworkTaskFinishListener listener){
+    public void joinRoom(int roomId, String playerName, final NetworkTaskFinishListener listener){
         //TO-DO join room network IO
         new Thread(new Runnable() {
             @Override
@@ -56,7 +56,7 @@ public class NetworkManager {
 
                 //finally call codes below to inform ui
                 if(success) {
-                    listener.onCreateRoomSuccess("ROOM ID");
+                    listener.onCreateRoomSuccess(1234);
                 }else{
                     listener.onJoinRoomFail("I don't know why");
                 }
@@ -64,7 +64,7 @@ public class NetworkManager {
         }).start();
     }
 
-    public void leaveRoom(String roomId){
+    public void leaveRoom(int roomId){
         //TO-DO leave room network IO
 
         //finally
@@ -123,7 +123,7 @@ public class NetworkManager {
         @Override
         public void onJoinRoomSuccess() {}
         @Override
-        public void onCreateRoomSuccess(String roomId) {}
+        public void onCreateRoomSuccess(int roomId) {}
         @Override
         public void onJoinRoomFail(String response) {}
         @Override
@@ -139,7 +139,7 @@ public class NetworkManager {
         void onJoinRoomFail(String response);
     }
     interface CreateRoomSuccessListener {
-        void onCreateRoomSuccess(String roomId);
+        void onCreateRoomSuccess(int roomId);
     }
     interface CreateRoomFailListener {
         void onCreateRoomFail(String response);
