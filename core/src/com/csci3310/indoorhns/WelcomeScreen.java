@@ -29,6 +29,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 
+import java.util.ArrayList;
+
 import javax.swing.GroupLayout;
 
 /**
@@ -64,6 +66,7 @@ public class WelcomeScreen implements Screen{
         createJoinRoomPopup();
         createLoadingPopup();
         bindListener();
+        mainGame.getAndroidConnector().getCoordinator().startWifiScan();
     }
 
     private void bindListener() {
@@ -436,7 +439,12 @@ public class WelcomeScreen implements Screen{
         stage.getBatch().setProjectionMatrix(camera.combined);
         stage.act(delta);
         stage.draw();
-
+        ArrayList<WifiFingerprint> resultList = mainGame.getAndroidConnector().getCoordinator().getWifiScanResult();
+        if(resultList != null) {
+            for (WifiFingerprint fingerprint : resultList) {
+                System.out.println("MAC: " + fingerprint.macAddress + "\tRSSI: " + fingerprint.rssi);
+            }
+        }
     }
 
     @Override
@@ -464,5 +472,6 @@ public class WelcomeScreen implements Screen{
         stage.dispose();
         skin.dispose();
         batch.dispose();
+        mainGame.getAndroidConnector().getCoordinator().stopWifiScan();
     }
 }

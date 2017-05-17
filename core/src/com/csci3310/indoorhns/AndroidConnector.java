@@ -1,5 +1,7 @@
 package com.csci3310.indoorhns;
 
+import java.util.ArrayList;
+
 /**
  * Created by Edmund on 5/8/2017.
  */
@@ -20,5 +22,8 @@ public class AndroidConnector{
         void test();
         String getAndroidId();
         void showToast(String message);
+        void startWifiScan();
+        void stopWifiScan();
+        ArrayList<WifiFingerprint> getWifiScanResult();
     }
 }
