@@ -101,12 +101,12 @@ public class NetworkManager {
                     @Override
                     public void onResponse(Call<Success> call, Response<Success> response) {
                         if(!response.isSuccessful()){
-                            call.enqueue(this);
+                            call.clone().enqueue(this);
                         }
                     }
                     @Override
                     public void onFailure(Call<Success> call, Throwable t) {
-                        call.enqueue(this);
+                        call.clone().enqueue(this);
                     }
                 };
                 Call<Success> quitRoomCall = httpService.quitRoom(new QuitRoomRequest(roomId, uuid));
@@ -124,12 +124,12 @@ public class NetworkManager {
                     @Override
                     public void onResponse(Call<Success> call, Response<Success> response) {
                         if(!response.isSuccessful()){
-                            call.enqueue(this);
+                            call.clone().enqueue(this);
                         }
                     }
                     @Override
                     public void onFailure(Call<Success> call, Throwable t) {
-                        call.enqueue(this);
+                        call.clone().enqueue(this);
                     }
                 };
                 Call<Success> endGameCall = httpService.endGame(new RoomId(roomId));
@@ -154,7 +154,7 @@ public class NetworkManager {
                                 listener.onEndGame();
                             }
                             else{
-                                call.enqueue(this);
+                                call.clone().enqueue(this);
 
                                 List<LocationLabel> locationLabels = response.body().locationList;
                                 HashMap<String,String> hm = new HashMap<String, String>();
@@ -167,7 +167,7 @@ public class NetworkManager {
                     }
                     @Override
                     public void onFailure(Call<LocationLabelExchangeResponse> call, Throwable t) {
-                        call.enqueue(this);
+                        call.clone().enqueue(this);
                     }
                 };
                 Call<LocationLabelExchangeResponse> locationLabelExchangeRequestCall =
@@ -210,7 +210,7 @@ public class NetworkManager {
                     public void onResponse(Call<GameStartCheckResponse> call, Response<GameStartCheckResponse> response) {
                         if(!response.isSuccessful()){
                             //server error
-                            call.enqueue(this);
+                            call.clone().enqueue(this);
                         }
                         else {
                             //Success
@@ -231,7 +231,7 @@ public class NetworkManager {
                             }
                             listener.onPlayerListUpdate();
                             if(waitingRoom.getPlayerListUpdatePollingTrigger()) {
-                                call.enqueue(this);
+                                call.clone().enqueue(this);
                             }
                         }
                     }
@@ -239,7 +239,7 @@ public class NetworkManager {
                     @Override
                     public void onFailure(Call<GameStartCheckResponse> call, Throwable t) {
                         //call again
-                        call.enqueue(this);
+                        call.clone().enqueue(this);
                     }
                 };
                 final Call<GameStartCheckResponse>  gameStartCheckResponseCall= httpService.startGameCheck(new RoomId(waitingRoom.getRoomId()));
