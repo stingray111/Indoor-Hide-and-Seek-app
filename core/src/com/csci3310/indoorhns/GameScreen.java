@@ -84,12 +84,6 @@ public class GameScreen implements Screen {
         mainGame.getAndroidConnector().getCoordinator().startWifiScan();
         playerLocationUpdatePolling = true;
         startPlayerLocationUpdatePolling(this);
-        fakeHashMap = new HashMap<String, String>();
-        fakeHashMap.put("testing0", "09R4");
-        fakeHashMap.put("testing1", "09R4");
-        fakeHashMap.put("testing2", "09R4");
-        fakeHashMap.put(me.getAndroidID(), "09R4");
-        updatePlayerCoordinate(fakeHashMap);
     }
 
     private void startPlayerLocationUpdatePolling(final GameScreen gameScreen){
@@ -351,7 +345,6 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        updatePlayerCoordinate(fakeHashMap);
         batch.begin();
         background.draw(batch);
         batch.end();
