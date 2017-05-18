@@ -153,7 +153,9 @@ public class NetworkManager {
                     @Override
                     public void onResponse(Call<LocationLabelExchangeResponse> call, Response<LocationLabelExchangeResponse> response) {
                         if(gameScreen.getPlayerLocationUpdatePollingTrigger()){
-                            if(response.body().gameEnd){
+                            if(!response.isSuccessful()){
+                                listener.onEndGame();
+                            }else if(response.body().gameEnd){
                                 listener.onEndGame();
                             }
                             else{

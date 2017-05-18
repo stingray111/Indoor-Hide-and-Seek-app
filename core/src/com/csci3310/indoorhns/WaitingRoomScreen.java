@@ -145,6 +145,7 @@ public class WaitingRoomScreen implements Screen {
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
+                        mainGame.getNetworkManager().leaveRoom(roomId,mainGame.getAndroidConnector().getCoordinator().getAndroidId());
                         mainGame.getScreenManager().transitToWelcomeScreen();
                     }
                 });
@@ -389,6 +390,6 @@ public class WaitingRoomScreen implements Screen {
         skin.dispose();
         batch.dispose();
         this.playerListUpdatePollingTrigger = false;
-        this.mainGame.getNetworkManager().leaveRoom(roomId,mainGame.getAndroidConnector().getCoordinator().getAndroidId());
+        //this.mainGame.getNetworkManager().leaveRoom(roomId,mainGame.getAndroidConnector().getCoordinator().getAndroidId());
     }
 }
