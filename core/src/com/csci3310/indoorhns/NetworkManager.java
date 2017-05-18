@@ -1,6 +1,7 @@
 package com.csci3310.indoorhns;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.StringBuilder;
 import com.csci3310.network.HTTP;
 import com.csci3310.network.model.CreateRoomRequest;
 import com.csci3310.network.model.GameStartCheckResponse;
@@ -177,7 +178,7 @@ public class NetworkManager {
         @Override
         public void onPlayerListUpdate() {}
         @Override
-        public void onPlayerLocationUpdate() { }
+        public void onPlayerLocationUpdate(HashMap<String,String> playerPointMap) { }
     }
 
     interface JoinRoomSuccessListener {
@@ -196,7 +197,7 @@ public class NetworkManager {
         void onPlayerListUpdate();
     }
     interface PlayerLocationUpdateListener{
-        void onPlayerLocationUpdate();
+        void onPlayerLocationUpdate(HashMap<String,String> playerPointMap);
     }
 
 }

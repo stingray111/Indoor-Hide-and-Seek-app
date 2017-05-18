@@ -10,6 +10,10 @@ import android.net.wifi.WifiManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by Igho on 17/5/2017.
  */
@@ -17,15 +21,18 @@ import java.util.List;
 public class WifiScanReceiver extends BroadcastReceiver {
 
     private WifiManager wifiManager;
+    private String uuid;
     private ArrayList<WifiFingerprint> resultList;
     private boolean keepScanning;
     private boolean scanning;
+    public volatile static String location;
 
     public WifiScanReceiver(Context context) {
         wifiManager = (WifiManager) context.getSystemService (Context.WIFI_SERVICE);
         this.resultList = new ArrayList<WifiFingerprint>();
         this.keepScanning = false;
         this.scanning = false;
+        this.uuid = ((IndoorHnSLauncher)context).getAndroidId();
     }
 
     public boolean isScanning(){return scanning;}
@@ -45,7 +52,34 @@ public class WifiScanReceiver extends BroadcastReceiver {
 
     @SuppressLint("UseValueOf")
     public void onReceive(Context c, Intent intent) {
-        List<ScanResult> scanReusltList = wifiManager.getScanResults();
+        final List<ScanResult> scanReusltList = wifiManager.getScanResults();
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final HTTP2 httpService = HTTP2.retrofit.create(HTTP2.class);
+                Callback<FindApiTrackResponse> findApiTrackResponseCallback = new Callback<FindApiTrackResponse>() {
+                    @Override
+                    public void onResponse(Call<FindApiTrackResponse> call, Response<FindApiTrackResponse> response) {
+                        WifiScanReceiver.location = response.body().location;
+                    }
+
+                    @Override
+                    public void onFailure(Call<FindApiTrackResponse> call, Throwable t) {
+                    }
+                };
+                List<WifiSignal> wifiSignals = new ArrayList<>();
+                for (ScanResult r:scanReusltList ) {
+                    wifiSignals.add(new WifiSignal(r.BSSID,r.level));
+                }
+                FindApiTrackRequest request = new FindApiTrackRequest(uuid,wifiSignals);
+                Call<FindApiTrackResponse> findApiTrackResponseCall = httpService.track(request);
+                findApiTrackResponseCall.enqueue(findApiTrackResponseCallback);
+            }
+        });
+
+
         this.resultList.clear(); //add this
         for (int i = 0; i < scanReusltList.size(); i++) {
             ScanResult result = scanReusltList.get(i);
