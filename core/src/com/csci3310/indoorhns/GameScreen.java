@@ -98,6 +98,7 @@ public class GameScreen implements Screen {
             float ratio = floor == 9 ? floor9ImageRatio : floor10ImageRatio;
             float offsetX = floor == 9 ? floor9.getX() : floor10.getX();
             Player player = playerMap.get(androidId);
+            if(player == null)continue;
             Image indicator = playerIndicatorMap.get(androidId);
             Label nameLabel = playerNameLabelMap.get(androidId);
             indicator.remove();
