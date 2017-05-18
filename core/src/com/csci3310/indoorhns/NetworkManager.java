@@ -191,6 +191,7 @@ public class NetworkManager {
 
 
     public void startPlayerListPolling(final WaitingRoomScreen waitingRoom, final NetworkTaskFinishListener listener){
+        System.out.println("here: startPlayerLIstPolling");
         new Thread(new Runnable(){
             @Override
             public void run() {
@@ -220,7 +221,9 @@ public class NetworkManager {
                             playerMap.clear();
                             playerMap.put(me.getAndroidID(),me);
                             boolean hasHuntee = false;
+                            System.out.println("here: started");
                             for (GameStartCheckResponse.Player player:playerList ) {
+                                System.out.println("here: "+ player.playerName+player.uuid);
                                 if(victim.equals(player.uuid))hasHuntee = true;
                                 if(player.uuid != me.getAndroidID()) {
                                     if (victim.equals(player.uuid)){
@@ -234,6 +237,7 @@ public class NetworkManager {
                             if(!hasHuntee)listener.onHunteeLeave();
                             listener.onPlayerListUpdate();
                             if(waitingRoom.getPlayerListUpdatePollingTrigger()) {
+                                System.out.println("here: enqueue again");
                                 call.clone().enqueue(this);
                             }
                         }
