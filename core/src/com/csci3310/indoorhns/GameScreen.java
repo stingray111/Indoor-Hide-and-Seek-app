@@ -300,8 +300,10 @@ public class GameScreen implements Screen {
                 super.clicked(event, x, y);
                 floor9Group.remove();
                 stage.addActor(floor10Group);
-                endGame.remove();
-                stage.addActor(endGame);
+                if(me.getType() == Player.Type.Huntee) {
+                    endGame.remove();
+                    stage.addActor(endGame);
+                }
                 showName.remove();
                 stage.addActor(showName);
             }
@@ -312,8 +314,10 @@ public class GameScreen implements Screen {
                 super.clicked(event, x, y);
                 floor10Group.remove();
                 stage.addActor(floor9Group);
-                endGame.remove();
-                stage.addActor(endGame);
+                if(me.getType() == Player.Type.Huntee) {
+                    endGame.remove();
+                    stage.addActor(endGame);
+                }
                 showName.remove();
                 stage.addActor(showName);
             }
