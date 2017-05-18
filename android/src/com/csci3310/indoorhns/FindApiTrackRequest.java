@@ -1,4 +1,4 @@
-package com.csci3310.network.model;
+package com.csci3310.indoorhns;
 
 import java.util.List;
 
@@ -20,9 +20,6 @@ public class FindApiTrackRequest {
         this.username = username;
         this. wifi_fingerprint = wifiSignalList;
     }
-
-    public class WifiSignal{
-        public String mac;
-        public String rssi;
-    }
 }
+
+
