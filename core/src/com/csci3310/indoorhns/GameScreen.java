@@ -140,7 +140,6 @@ public class GameScreen implements Screen {
                 if(showName.isChecked())floor9Group.addActor(nameLabel);
             }else{
                 floor10Group.addActor(indicator);
-                floor10Group.addActor(nameLabel);
                 if(showName.isChecked())floor10Group.addActor(nameLabel);
             }
         }
@@ -299,26 +298,24 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        floor9Group.remove();
-                        stage.addActor(floor10Group);
-                    }
-                });
+                floor9Group.remove();
+                stage.addActor(floor10Group);
+                endGame.remove();
+                stage.addActor(endGame);
+                showName.remove();
+                stage.addActor(showName);
             }
         });
         floor10.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        floor10Group.remove();
-                        stage.addActor(floor9Group);
-                    }
-                });
+                floor10Group.remove();
+                stage.addActor(floor9Group);
+                endGame.remove();
+                stage.addActor(endGame);
+                showName.remove();
+                stage.addActor(showName);
             }
         });
         endGame.addListener(new ClickListener(){
@@ -338,16 +335,11 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(showName.isChecked()){
-                            showName.setText("Hide Name");
-                        }else{
-                            showName.setText("Show Name");
-                        }
-                    }
-                });
+                if(showName.isChecked()){
+                    showName.setText("Hide Name");
+                }else{
+                    showName.setText("Show Name");
+                }
             }
         });
     }
