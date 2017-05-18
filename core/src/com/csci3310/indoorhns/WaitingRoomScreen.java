@@ -122,7 +122,7 @@ public class WaitingRoomScreen implements Screen {
             }
 
             @Override
-            public void onEndGame() {
+            public void onHunteeLeave() {
                 playerListUpdatePollingTrigger = false;
                 mainGame.getAndroidConnector().getCoordinator().showToast("Huntee is gone. Room is Closed.");
                 Gdx.app.postRunnable(new Runnable() {
