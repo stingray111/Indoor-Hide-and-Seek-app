@@ -225,7 +225,7 @@ public class NetworkManager {
                             for (GameStartCheckResponse.Player player:playerList ) {
                                 System.out.println("here: "+ player.playerName+player.uuid);
                                 if(victim.equals(player.uuid))hasHuntee = true;
-                                if(player.uuid != me.getAndroidID()) {
+                                if(!player.uuid.equals(me.getAndroidID())) {
                                     if (victim.equals(player.uuid)){
                                         playerMap.put(player.uuid,new Player(Player.Type.Huntee,player.playerName,player.uuid));
                                     }

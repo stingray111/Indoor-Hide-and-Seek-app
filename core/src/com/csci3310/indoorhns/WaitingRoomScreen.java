@@ -307,7 +307,6 @@ public class WaitingRoomScreen implements Screen {
         hunteeLabelList.clear();
 
         for(String androidId : playerMap.keySet()){
-            System.out.println(playerMap.get(androidId).getName());
             Player player = playerMap.get(androidId);
             Label label = new Label(player.getName(), new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
             if(player.getType() == Player.Type.Hunter){
