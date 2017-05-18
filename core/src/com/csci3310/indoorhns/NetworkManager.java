@@ -1,9 +1,20 @@
 package com.csci3310.indoorhns;
 
 import com.badlogic.gdx.Gdx;
+import com.csci3310.network.HTTP;
+import com.csci3310.network.model.CreateRoomRequest;
+import com.csci3310.network.model.JoinRoomRequest;
+import com.csci3310.network.model.RoomId;
+import com.csci3310.network.model.Success;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -12,54 +23,65 @@ import java.util.HashMap;
 
 public class NetworkManager {
 
+    public static String serverError = "Server Error";
+    public static String networkUnreachable = "Network Unreachable";
+
     final static public String server = "http://localhost/";
 
-    public void joinRoom(int roomId, String playerName, final NetworkTaskFinishListener listener){
+    public void joinRoom(final int roomId, final String playerName, final NetworkTaskFinishListener listener){
         //TO-DO join room network IO
         new Thread(new Runnable() {
             @Override
             public void run() {
-                boolean success = false;
+                final HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Callback<Success> joinRoomCallBack = new Callback<Success>() {
+                    @Override
+                    public void onResponse(Call<Success> call, Response<Success> response) {
+                        if(!response.isSuccessful()){
+                            listener.onJoinRoomFail(serverError);
+                        }
+                        else if(!response.body().isSuccess()){
+                            listener.onJoinRoomFail("Room not exist");
+                        }else {
+                            listener.onJoinRoomSuccess();
+                        }
+                    }
 
-
-                // pretend waiting for network response
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                // finally call codes below to inform ui
-                if(success) {
-                    listener.onJoinRoomSuccess();
-                }else{
-                    listener.onJoinRoomFail("I don't know why");
-                }
+                    @Override
+                    public void onFailure(Call<Success> call, Throwable t) {
+                        listener.onJoinRoomFail(networkUnreachable);
+                    }
+                };
+                Call<Success> joinRoomRequestCall = httpService.joinRoom(new JoinRoomRequest(roomId,playerName);
+                joinRoomRequestCall.enqueue(joinRoomCallBack);
             }
         }).start();
     }
 
-    public void createRoom(final NetworkTaskFinishListener listener){
+    public void createRoom(final String playerName,final NetworkTaskFinishListener listener){
         //TO-DO create room network IO
         new Thread(new Runnable() {
             @Override
             public void run() {
-                boolean success = true;
 
+                final HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Callback<RoomId> createRoomCallBack = new Callback<RoomId>(){
+                    @Override
+                    public void onResponse(Call<RoomId> call, Response<RoomId> response) {
+                        if(!response.isSuccessful()){
+                            listener.onJoinRoomFail(serverError);
+                        }else {
+                            listener.onCreateRoomSuccess(response.body().getRoomid());
+                        }
+                    }
 
-                // pretend waiting for network response
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                //finally call codes below to inform ui
-                if(success) {
-                    listener.onCreateRoomSuccess(1234);
-                }else{
-                    listener.onJoinRoomFail("I don't know why");
-                }
+                    @Override
+                    public void onFailure(Call<RoomId> call, Throwable t) {
+                        listener.onJoinRoomFail(networkUnreachable);
+                    }
+                };
+                Call<RoomId> createRoomCall = httpService.createRoom(new CreateRoomRequest(playerName));
+                createRoomCall.enqueue(createRoomCallBack);
             }
         }).start();
     }

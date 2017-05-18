@@ -129,7 +129,7 @@ public class WelcomeScreen implements Screen{
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        mainGame.getNetworkManager().createRoom(new NetworkManager.NetworkTaskFinishListener(){
+                        mainGame.getNetworkManager().createRoom(createRoomName.getText(), new NetworkManager.NetworkTaskFinishListener(){
                             @Override
                             public void onCreateRoomSuccess(final int roomId) {
                                 Gdx.app.postRunnable(new Runnable() {
