@@ -64,9 +64,10 @@ public class GameScreen implements Screen {
 
     private GamePointCoordinateConverter coordConverter;
 
+    private boolean playerLocationUpdatePolling;
     private HashMap<String, String> fakeHashMap;
 
-
+    public boolean getPlayerLocationUpdatePollingTrigger(){return playerLocationUpdatePolling;}
 
     public GameScreen(IndoorHideAndSeek mainGame, int roomId, Player me, HashMap<String, Player> playerMap){
         this.mainGame = mainGame;
@@ -80,12 +81,29 @@ public class GameScreen implements Screen {
         createSkin();
         createStage();
         bindListener();
+        mainGame.getAndroidConnector().getCoordinator().startWifiScan();
+        playerLocationUpdatePolling = true;
+        startPlayerLocationUpdatePolling(this);
         fakeHashMap = new HashMap<String, String>();
         fakeHashMap.put("testing0", "09R4");
         fakeHashMap.put("testing1", "09R4");
         fakeHashMap.put("testing2", "09R4");
         fakeHashMap.put(me.getAndroidID(), "09R4");
         updatePlayerCoordinate(fakeHashMap);
+    }
+
+    private void startPlayerLocationUpdatePolling(final GameScreen gameScreen){
+        mainGame.getNetworkManager().startPlayerLocationPolling(gameScreen, new NetworkManager.NetworkTaskFinishListener(){
+            @Override
+            public void onPlayerLocationUpdate(final HashMap<String, String> playerPointMap) {
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        updatePlayerCoordinate(playerPointMap);
+                    }
+                });
+            }
+        });
     }
 
     public void updatePlayerCoordinate(HashMap<String, String> playerPointMap){
@@ -366,5 +384,6 @@ public class GameScreen implements Screen {
         stage.dispose();
         skin.dispose();
         batch.dispose();
+        mainGame.getAndroidConnector().getCoordinator().stopWifiScan();
     }
 }
