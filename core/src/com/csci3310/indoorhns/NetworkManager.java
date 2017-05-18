@@ -162,8 +162,8 @@ public class NetworkManager {
                             }
                             else{
                                 System.out.println("exchange: mylocation"+gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation());
-                                call.clone().enqueue(this);
-
+                                Call<LocationLabelExchangeResponse> locationLabelExchangeRequestCall = httpService.locationLabelExchange( new LocationLabelExchangeRequest( gameScreen.getRoomId(), uuid, gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation() ));
+                                locationLabelExchangeRequestCall.enqueue(this);
 
                                 List<LocationLabel> locationLabels = response.body().locationList;
                                 HashMap<String,String> hm = new HashMap<String, String>();
@@ -179,16 +179,11 @@ public class NetworkManager {
                     @Override
                     public void onFailure(Call<LocationLabelExchangeResponse> call, Throwable t) {
                         System.out.println("exchange: mylocation"+gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation());
-                        call.clone().enqueue(this);
+                        Call<LocationLabelExchangeResponse> locationLabelExchangeRequestCall = httpService.locationLabelExchange( new LocationLabelExchangeRequest( gameScreen.getRoomId(), uuid, gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation() ));
+                        locationLabelExchangeRequestCall.enqueue(this);
                     }
                 };
-                Call<LocationLabelExchangeResponse> locationLabelExchangeRequestCall =
-                        httpService.locationLabelExchange(
-                                new LocationLabelExchangeRequest(
-                                        gameScreen.getRoomId(),
-                                        uuid,
-                                        gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation()
-                                        ));
+                Call<LocationLabelExchangeResponse> locationLabelExchangeRequestCall = httpService.locationLabelExchange( new LocationLabelExchangeRequest( gameScreen.getRoomId(), uuid, gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation() ));
                 locationLabelExchangeRequestCall.enqueue(locationLabelExchangeResponseCallback);
                 System.out.println("exchange: mylocation"+gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation());
             }
