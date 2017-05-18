@@ -57,7 +57,7 @@ public interface HTTP {
             @Body RoomId roomId
     );
 
-    @POST("/startGameCheck")
+    @POST("/gameStartCheck")
     Call<GameStartCheckResponse> startGameCheck(
             @Body RoomId roomId
     );
