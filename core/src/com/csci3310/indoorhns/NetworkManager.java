@@ -3,9 +3,12 @@ package com.csci3310.indoorhns;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.csci3310.network.HTTP;
+import com.csci3310.network.LocationLabelExchangeRequest;
 import com.csci3310.network.model.CreateRoomRequest;
 import com.csci3310.network.model.GameStartCheckResponse;
 import com.csci3310.network.model.JoinRoomRequest;
+import com.csci3310.network.model.LocationLabel;
+import com.csci3310.network.model.LocationLabelExchangeResponse;
 import com.csci3310.network.model.RoomId;
 import com.csci3310.network.model.Success;
 
@@ -98,10 +101,44 @@ public class NetworkManager {
 
 
     public void startPlayerLocationPolling(final GameScreen gameScreen, NetworkTaskFinishListener listener){
+        final String uuid = gameScreen.getMainGame().getAndroidConnector().getCoordinator().getAndroidId();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation();
+
+                final HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                Callback<LocationLabelExchangeResponse> locationLabelExchangeResponseCallback = new Callback<LocationLabelExchangeResponse>() {
+                    @Override
+                    public void onResponse(Call<LocationLabelExchangeResponse> call, Response<LocationLabelExchangeResponse> response) {
+                        if(gameScreen.getPlayerLocationUpdatePollingTrigger()){
+                            call.enqueue(this);
+                            if(response.body().gameEnd){
+
+                            }
+                            else{
+                                List<LocationLabel> locationLabels = response.body().locationList;
+                            }
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<LocationLabelExchangeResponse> call, Throwable t) {
+                        call.enqueue(this);
+                    }
+                };
+                Call<LocationLabelExchangeResponse> locationLabelExchangeRequestCall =
+                        httpService.locationLabelExchange(
+                                new LocationLabelExchangeRequest(
+                                        gameScreen.getRoomId(),
+                                        uuid,
+                                        gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation()
+                                        ));
+                locationLabelExchangeRequestCall.enqueue(locationLabelExchangeResponseCallback);
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
             }
         });
     }

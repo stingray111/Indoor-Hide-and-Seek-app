@@ -7,6 +7,10 @@ package com.csci3310.network.model;
 public class LocationLabel {
     public String uuid;
     public String locationLabel;
+    public LocationLabel(String uuid,String locationLabel){
+        this.uuid = uuid;
+        this.locationLabel = locationLabel;
+    }
 
     public String getUuid() {
         return uuid;

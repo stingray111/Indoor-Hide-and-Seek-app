@@ -373,6 +373,11 @@ public class GameScreen implements Screen {
 
     }
 
+    public int getRoomId() {
+        return roomId;
+    }
+
+
     @Override
     public void dispose() {
         stage.dispose();
