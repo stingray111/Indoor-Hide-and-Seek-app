@@ -68,6 +68,7 @@ public class GameScreen implements Screen {
     private HashMap<String, String> fakeHashMap;
 
     public boolean getPlayerLocationUpdatePollingTrigger(){return playerLocationUpdatePolling;}
+    public IndoorHideAndSeek getMainGame(){return mainGame;}
 
     public GameScreen(IndoorHideAndSeek mainGame, int roomId, Player me, HashMap<String, Player> playerMap){
         this.mainGame = mainGame;

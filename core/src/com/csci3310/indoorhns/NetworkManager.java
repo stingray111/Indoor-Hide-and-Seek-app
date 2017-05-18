@@ -97,11 +97,11 @@ public class NetworkManager {
     }
 
 
-    public void startPlayerLocationPolling(GameScreen gameScreen, NetworkTaskFinishListener listener){
+    public void startPlayerLocationPolling(final GameScreen gameScreen, NetworkTaskFinishListener listener){
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+                gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation();
             }
         });
     }

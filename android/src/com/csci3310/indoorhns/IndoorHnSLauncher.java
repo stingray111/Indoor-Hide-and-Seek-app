@@ -96,7 +96,12 @@ public class IndoorHnSLauncher extends AndroidApplication implements AndroidConn
 		return wifiScanReceiver.getResultList();
 	}
 
-    @Override
+	@Override
+	public String getWifiScanReceiverLocation() {
+		return wifiScanReceiver.location;
+	}
+
+	@Override
     protected void onDestroy() {
         //unregisterReceiver(wifiScanReceiver);
         super.onDestroy();

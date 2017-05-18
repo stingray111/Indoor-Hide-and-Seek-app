@@ -25,5 +25,6 @@ public class AndroidConnector{
         void startWifiScan();
         void stopWifiScan();
         ArrayList<WifiFingerprint> getWifiScanResult();
+        String getWifiScanReceiverLocation();
     }
 }
