@@ -225,7 +225,7 @@ public class NetworkManager {
                             boolean hasHuntee = false;
                             System.out.println("here: started");
                             for (GameStartCheckResponse.Player player:playerList ) {
-                                System.out.println("here: "+ player.playerName+player.uuid);
+                                System.out.println("here: "+ player.playerName+" "+player.uuid);
                                 if(victim.equals(player.uuid))hasHuntee = true;
                                 if(player.uuid != me.getAndroidID()) {
                                     if (victim.equals(player.uuid)){
