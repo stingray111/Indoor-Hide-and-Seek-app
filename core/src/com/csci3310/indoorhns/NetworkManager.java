@@ -96,6 +96,11 @@ public class NetworkManager {
         // None, UI will leave waiting room without waiting for server response
     }
 
+    public void endGame(int roomId){
+        // victim being caught, end game
+        
+    }
+
 
     public void startPlayerLocationPolling(final GameScreen gameScreen, NetworkTaskFinishListener listener){
         new Thread(new Runnable() {

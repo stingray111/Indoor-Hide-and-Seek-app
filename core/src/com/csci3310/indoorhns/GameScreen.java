@@ -310,7 +310,7 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                // mainGame.getNetworkManager().endGame(roomId);
+                 mainGame.getNetworkManager().endGame(roomId);
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
