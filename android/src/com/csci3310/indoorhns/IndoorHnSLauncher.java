@@ -47,6 +47,7 @@ public class IndoorHnSLauncher extends AndroidApplication implements AndroidConn
         }
         AndroidConnector connector = new AndroidConnector(this);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+        config.useWakelock = true;
         game = new IndoorHideAndSeek(connector);
         initialize(game, config);
 	}

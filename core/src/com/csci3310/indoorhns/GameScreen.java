@@ -37,7 +37,7 @@ import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 
 public class GameScreen implements Screen {
 
-    final private static Color[] HunterColorList = new Color[]{Color.GREEN, Color.ORANGE, Color.RED};
+    final private static Color[] HunterColorList = new Color[]{Color.GREEN, Color.BLUE, Color.RED};
     final private static Color HunteeColor = Color.WHITE;
     final private static int[] HunterRadiusList = new int[]{30, 25, 20};
     final private static int HunteeRadius = 40;
@@ -56,7 +56,7 @@ public class GameScreen implements Screen {
     private Group floor9Group, floor10Group;
     private Image floor9, floor10;
     private Label floor9Label, floor10Label;
-    private TextButton endGame, showName;
+    private TextButton endGame;
     private SpriteBatch batch;
     private Sprite background;
 
@@ -129,19 +129,14 @@ public class GameScreen implements Screen {
             Player player = playerMap.get(androidId);
             if(player == null)continue;
             Image indicator = playerIndicatorMap.get(androidId);
-            Label nameLabel = playerNameLabelMap.get(androidId);
             indicator.remove();
-            nameLabel.remove();
             player.getCoordinate().setCoordinate(offsetX + newCoord.getX() * ratio, newCoord.getY() * ratio);
             indicator.setPosition(player.getCoordinate().getX() - indicator.getWidth()/2, player.getCoordinate().getY() - indicator.getHeight()/2);
-            nameLabel.setPosition(indicator.getX() - nameLabel.getWidth()/2, indicator.getY() + nameLabel.getHeight() + indicator.getHeight()/2);
             if(me.getType() == Player.Type.Hunter && player.getType() == Player.Type.Huntee)continue;
             if(floor == 9){
                 floor9Group.addActor(indicator);
-                if(showName.isChecked())floor9Group.addActor(nameLabel);
             }else{
                 floor10Group.addActor(indicator);
-                if(showName.isChecked())floor10Group.addActor(nameLabel);
             }
         }
     }
@@ -180,7 +175,7 @@ public class GameScreen implements Screen {
         // floor 10
         floor10 = new Image(new Texture(Gdx.files.internal("10_blue.png")));
         floor10.setSize(floor10.getPrefWidth()*floor10ImageRatio, floor10.getPrefHeight()*floor10ImageRatio);
-        floor10.setPosition((width - floor10.getWidth())/2, (height - floor10.getHeight())/2);
+        floor10.setPosition((width - floor10.getWidth()), (height - floor10.getHeight())/2);
 
         //floor10 label
         floor10Label = new Label("Floor 10", new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
@@ -191,11 +186,6 @@ public class GameScreen implements Screen {
 //        floor10Group.setBounds(floor10.getX(), floor10.getY(), floor10.getWidth(), floor10.getHeight());
         floor10Group.addActor(floor10);
         floor10Group.addActor(floor10Label);
-
-        // show name button
-        showName = new TextButton("Show Name", skin.get("button", TextButton.TextButtonStyle.class));
-        showName.setPosition(0, 0);
-        stage.addActor(showName);
 
         // end button
         endGame = new TextButton("Caught", skin.get("button", TextButton.TextButtonStyle.class));
@@ -215,6 +205,11 @@ public class GameScreen implements Screen {
                 for(int i=0; i<4; i++){
                     pixmap.drawCircle(radius, radius, radius-i);
                 }
+                Image image = new Image(new Texture(pixmap));
+                image.setSize(image.getPrefWidth(), image.getPrefHeight());
+                image.setColor(HunterColorList[loopCnt]);
+                pixmap.dispose();
+                playerIndicatorMap.put(androidId, image);
                 loopCnt++;
             }else{
                 int radius = (int) HunteeRadiusRatio*height;
@@ -223,20 +218,24 @@ public class GameScreen implements Screen {
                 for(int i=0; i<4; i++){
                     pixmap.drawCircle(radius, radius, radius-i);
                 }
-
+                Image image = new Image(new Texture(pixmap));
+                image.setSize(image.getPrefWidth(), image.getPrefHeight());
+                image.setColor(HunteeColor);
+                pixmap.dispose();
+                playerIndicatorMap.put(androidId, image);
             }
-            Image image = new Image(new Texture(pixmap));
-            pixmap.dispose();
-            image.setSize(image.getPrefWidth(), image.getPrefHeight());
-            playerIndicatorMap.put(androidId, image);
         }
 
         // player name label
         playerNameLabelMap = new HashMap<String, Label>();
+        int i=0;
         for(String androidId: playerMap.keySet()){
             Image indicator = playerIndicatorMap.get(androidId);
-            Label label = new Label(playerMap.get(androidId).getName(), new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
+            Label label = new Label(playerMap.get(androidId).getName(), new Label.LabelStyle(skin.getFont("text"), indicator.getColor()));
+            label.setPosition(0, height * 0.8f - height * i * 0.15f - label.getHeight());
             playerNameLabelMap.put(androidId, label);
+            stage.addActor(label);
+            i++;
         }
 
     }
@@ -306,8 +305,6 @@ public class GameScreen implements Screen {
                     endGame.remove();
                     stage.addActor(endGame);
                 }
-                showName.remove();
-                stage.addActor(showName);
             }
         });
         floor10.addListener(new ClickListener(){
@@ -320,8 +317,6 @@ public class GameScreen implements Screen {
                     endGame.remove();
                     stage.addActor(endGame);
                 }
-                showName.remove();
-                stage.addActor(showName);
             }
         });
         endGame.addListener(new ClickListener(){
@@ -335,17 +330,6 @@ public class GameScreen implements Screen {
                         mainGame.getScreenManager().transitToWelcomeScreen();
                     }
                 });
-            }
-        });
-        showName.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                if(showName.isChecked()){
-                    showName.setText("Hide Name");
-                }else{
-                    showName.setText("Show Name");
-                }
             }
         });
     }
