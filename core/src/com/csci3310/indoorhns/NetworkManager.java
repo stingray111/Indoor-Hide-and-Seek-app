@@ -201,12 +201,6 @@ public class NetworkManager {
                 final HashMap<String, Player> playerMap = waitingRoom.getPlayerMap();
                 final Player me = waitingRoom.getMe();
 
-                //use
-                //waitingRoom.getRoomId();
-                //get
-                //playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
-                //listener.onPlayerListUpdate();
-
                 final HTTP httpService = HTTP.retrofit.create(HTTP.class);
 
                 final Callback<GameStartCheckResponse> gameStartCheckResponseCallback = new Callback<GameStartCheckResponse>() {
