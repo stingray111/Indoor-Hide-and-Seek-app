@@ -99,6 +99,11 @@ public class NetworkManager {
         // None, UI will leave waiting room without waiting for server response
     }
 
+    public void endGame(int roomId){
+        // victim being caught, end game
+
+    }
+
 
     public void startPlayerLocationPolling(final GameScreen gameScreen, NetworkTaskFinishListener listener){
         final String uuid = gameScreen.getMainGame().getAndroidConnector().getCoordinator().getAndroidId();
@@ -215,7 +220,9 @@ public class NetworkManager {
         @Override
         public void onPlayerListUpdate() {}
         @Override
-        public void onPlayerLocationUpdate(HashMap<String,String> playerPointMap) { }
+        public void onPlayerLocationUpdate(HashMap<String,String> playerPointMap) {}
+        @Override
+        public void onEndGame(){}
     }
 
     interface JoinRoomSuccessListener {
@@ -235,6 +242,7 @@ public class NetworkManager {
     }
     interface PlayerLocationUpdateListener{
         void onPlayerLocationUpdate(HashMap<String,String> playerPointMap);
+        void onEndGame();
     }
 
 }
