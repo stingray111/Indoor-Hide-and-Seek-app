@@ -69,14 +69,16 @@ public class WifiScanReceiver extends BroadcastReceiver {
                     }
                 };
                 List<WifiSignal> wifiSignals = new ArrayList<>();
+                System.out.println("wifi: start");
                 for (ScanResult r:scanReusltList ) {
+                    System.out.println("wifi: "+r.BSSID+" "+r.level);
                     wifiSignals.add(new WifiSignal(r.BSSID,r.level));
                 }
                 FindApiTrackRequest request = new FindApiTrackRequest(uuid,wifiSignals);
                 Call<FindApiTrackResponse> findApiTrackResponseCall = httpService.track(request);
                 findApiTrackResponseCall.enqueue(findApiTrackResponseCallback);
             }
-        });
+        }).start();
 
         if(keepScanning) {
             wifiManager.startScan(); //start a new scan to update values faster
