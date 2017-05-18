@@ -219,8 +219,9 @@ public class NetworkManager {
                             String victim = response.body().getVictim();
                             playerMap.clear();
                             playerMap.put(me.getAndroidID(),me);
-
+                            boolean hasHuntee = false;
                             for (GameStartCheckResponse.Player player:playerList ) {
+                                if(victim.equals(player.uuid))hasHuntee = true;
                                 if(player.uuid != me.getAndroidID()) {
                                     if (victim.equals(player.uuid)){
                                         playerMap.put(player.uuid,new Player(Player.Type.Huntee,player.playerName,player.uuid));
@@ -230,6 +231,7 @@ public class NetworkManager {
                                     }
                                 }
                             }
+                            if(!hasHuntee)listener.onHunteeLeave();
                             listener.onPlayerListUpdate();
                             if(waitingRoom.getPlayerListUpdatePollingTrigger()) {
                                 call.clone().enqueue(this);
@@ -261,6 +263,9 @@ public class NetworkManager {
         @Override
         public void onPlayerListUpdate() {}
         @Override
+        public void onHunteeLeave() {}
+
+        @Override
         public void onPlayerLocationUpdate(HashMap<String,String> playerPointMap) {}
         @Override
         public void onEndGame(){}
@@ -280,6 +285,7 @@ public class NetworkManager {
     }
     interface PlayerListUpdateListener {
         void onPlayerListUpdate();
+        void onHunteeLeave();
     }
     interface PlayerLocationUpdateListener{
         void onPlayerLocationUpdate(HashMap<String,String> playerPointMap);
