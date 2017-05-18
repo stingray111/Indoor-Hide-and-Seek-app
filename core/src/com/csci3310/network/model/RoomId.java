@@ -5,17 +5,15 @@ package com.csci3310.network.model;
  */
 
 public class RoomId {
-    private int roomid;
+    private int roomId;
 
-    public RoomId(int roomid){
-        this.roomid = roomid;
-    }
+    public RoomId(int roomid){ this.roomId =  roomid; }
 
     public int getRoomid() {
-        return roomid;
+        return roomId;
     }
 
     public void setRoomid(int roomid) {
-        this.roomid = roomid;
+        this.roomId = roomid;
     }
 }

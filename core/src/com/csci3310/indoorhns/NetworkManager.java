@@ -12,6 +12,7 @@ import com.csci3310.network.model.LocationLabelExchangeResponse;
 import com.csci3310.network.model.QuitRoomRequest;
 import com.csci3310.network.model.RoomId;
 import com.csci3310.network.model.Success;
+import com.sun.tools.javac.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,6 +78,7 @@ public class NetworkManager {
                         if(!response.isSuccessful()){
                             listener.onCreateRoomFail(serverError);
                         }else {
+                            System.out.println("here: "+ response.body().getRoomid());
                             listener.onCreateRoomSuccess(response.body().getRoomid());
                         }
                     }
