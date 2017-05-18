@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import java.util.HashMap;
+import java.util.concurrent.RunnableFuture;
 
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 
@@ -54,11 +55,12 @@ public class GameScreen implements Screen {
     private Group floor9Group, floor10Group;
     private Image floor9, floor10;
     private Label floor9Label, floor10Label;
-    private TextButton endGame;
+    private TextButton endGame, showName;
     private SpriteBatch batch;
     private Sprite background;
 
     private HashMap<String, Image> playerIndicatorMap;
+    private HashMap<String, Label> playerNameLabelMap;
 
     private GamePointCoordinateConverter coordConverter;
 
@@ -97,14 +99,20 @@ public class GameScreen implements Screen {
             float offsetX = floor == 9 ? floor9.getX() : floor10.getX();
             Player player = playerMap.get(androidId);
             Image indicator = playerIndicatorMap.get(androidId);
-            player.getCoordinate().setCoordinate(offsetX + newCoord.getX() * ratio - indicator.getWidth()/2, newCoord.getY() * ratio - indicator.getHeight()/2);
+            Label nameLabel = playerNameLabelMap.get(androidId);
             indicator.remove();
-            indicator.setPosition(player.getCoordinate().getX(), player.getCoordinate().getY());
+            nameLabel.remove();
+            player.getCoordinate().setCoordinate(offsetX + newCoord.getX() * ratio, newCoord.getY() * ratio);
+            indicator.setPosition(player.getCoordinate().getX() - indicator.getWidth()/2, player.getCoordinate().getY() - indicator.getHeight()/2);
+            nameLabel.setPosition(indicator.getX() - nameLabel.getWidth()/2, indicator.getY() + nameLabel.getHeight() + indicator.getHeight()/2);
             if(me.getType() == Player.Type.Hunter && player.getType() == Player.Type.Huntee)continue;
             if(floor == 9){
-                floor9Group.addActor(playerIndicatorMap.get(androidId));
+                floor9Group.addActor(indicator);
+                if(showName.isChecked())floor9Group.addActor(nameLabel);
             }else{
-                floor10Group.addActor(playerIndicatorMap.get(androidId));
+                floor10Group.addActor(indicator);
+                floor10Group.addActor(nameLabel);
+                if(showName.isChecked())floor10Group.addActor(nameLabel);
             }
         }
     }
@@ -155,6 +163,11 @@ public class GameScreen implements Screen {
         floor10Group.addActor(floor10);
         floor10Group.addActor(floor10Label);
 
+        // show name button
+        showName = new TextButton("Show Name", skin.get("button", TextButton.TextButtonStyle.class));
+        showName.setPosition(0, 0);
+        stage.addActor(showName);
+
         // end button
         endGame = new TextButton("Caught", skin.get("button", TextButton.TextButtonStyle.class));
         endGame.setPosition(width - endGame.getWidth(), height-endGame.getHeight());
@@ -162,7 +175,7 @@ public class GameScreen implements Screen {
             stage.addActor(endGame);
         }
 
-        // player circle indicator
+        // player  indicator
         playerIndicatorMap = new HashMap<String, Image>();
         int loopCnt = 0;
         for(String androidId : playerMap.keySet()){
@@ -186,6 +199,14 @@ public class GameScreen implements Screen {
             pixmap.dispose();
             image.setSize(image.getPrefWidth(), image.getPrefHeight());
             playerIndicatorMap.put(androidId, image);
+        }
+
+        // player name label
+        playerNameLabelMap = new HashMap<String, Label>();
+        for(String androidId: playerMap.keySet()){
+            Image indicator = playerIndicatorMap.get(androidId);
+            Label label = new Label(playerMap.get(androidId).getName(), new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
+            playerNameLabelMap.put(androidId, label);
         }
 
     }
@@ -284,6 +305,22 @@ public class GameScreen implements Screen {
                 });
             }
         });
+        showName.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(showName.isChecked()){
+                            showName.setText("Hide Name");
+                        }else{
+                            showName.setText("Show Name");
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -295,6 +332,7 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        updatePlayerCoordinate(fakeHashMap);
         batch.begin();
         background.draw(batch);
         batch.end();
