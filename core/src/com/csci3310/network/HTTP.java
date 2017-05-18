@@ -4,6 +4,7 @@ import com.csci3310.network.model.CreateRoomRequest;
 import com.csci3310.network.model.JoinRoomRequest;
 import com.csci3310.network.model.LocationLabel;
 import com.csci3310.network.model.PushLocationLabelRequest;
+import com.csci3310.network.model.PushLocationLabelResponse;
 import com.csci3310.network.model.QuitRoomRequest;
 import com.csci3310.network.model.RoomId;
 import com.csci3310.network.model.StartGameResponse;
@@ -55,8 +56,8 @@ public interface HTTP {
     );
 
     @POST("/pushLocationLabel")
-    Call<PushLocationLabelRequest> pushLocationLabel(
-            @Body Success success
+    Call<PushLocationLabelResponse> pushLocationLabel(
+            @Body PushLocationLabelRequest pushLocationLabelRequest
     );
 
     OkHttpClient okHttpClient = new OkHttpClient.Builder()
