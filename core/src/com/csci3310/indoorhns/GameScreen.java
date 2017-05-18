@@ -98,7 +98,22 @@ public class GameScreen implements Screen {
                     }
                 });
             }
+            @Override
+            public void onEndGame(){
+                stopPlayerLocationUpdatePolling();
+                mainGame.getAndroidConnector().getCoordinator().showToast("Huntee is caught. Game is Ended");
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainGame.getScreenManager().transitToWelcomeScreen();
+                    }
+                });
+            }
         });
+    }
+
+    private void stopPlayerLocationUpdatePolling(){
+        playerLocationUpdatePolling = false;
     }
 
     public void updatePlayerCoordinate(HashMap<String, String> playerPointMap){
@@ -378,6 +393,7 @@ public class GameScreen implements Screen {
         stage.dispose();
         skin.dispose();
         batch.dispose();
+        stopPlayerLocationUpdatePolling();
         mainGame.getAndroidConnector().getCoordinator().stopWifiScan();
     }
 }

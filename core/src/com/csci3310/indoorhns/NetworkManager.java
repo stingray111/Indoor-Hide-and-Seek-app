@@ -98,7 +98,7 @@ public class NetworkManager {
 
     public void endGame(int roomId){
         // victim being caught, end game
-        
+
     }
 
 
@@ -183,7 +183,9 @@ public class NetworkManager {
         @Override
         public void onPlayerListUpdate() {}
         @Override
-        public void onPlayerLocationUpdate(HashMap<String,String> playerPointMap) { }
+        public void onPlayerLocationUpdate(HashMap<String,String> playerPointMap) {}
+        @Override
+        public void onEndGame(){}
     }
 
     interface JoinRoomSuccessListener {
@@ -203,6 +205,7 @@ public class NetworkManager {
     }
     interface PlayerLocationUpdateListener{
         void onPlayerLocationUpdate(HashMap<String,String> playerPointMap);
+        void onEndGame();
     }
 
 }
