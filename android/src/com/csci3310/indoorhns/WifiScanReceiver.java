@@ -79,13 +79,6 @@ public class WifiScanReceiver extends BroadcastReceiver {
             }
         });
 
-
-        this.resultList.clear(); //add this
-        for (int i = 0; i < scanReusltList.size(); i++) {
-            ScanResult result = scanReusltList.get(i);
-            //use add here:
-            resultList.add(new WifiFingerprint(result.BSSID, result.level)); //append to the other data
-        }
         if(keepScanning) {
             wifiManager.startScan(); //start a new scan to update values faster
         }else{
