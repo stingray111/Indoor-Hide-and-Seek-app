@@ -3,6 +3,7 @@ package com.csci3310.indoorhns;
 import com.badlogic.gdx.Gdx;
 import com.csci3310.network.HTTP;
 import com.csci3310.network.model.CreateRoomRequest;
+import com.csci3310.network.model.GameStartCheckResponse;
 import com.csci3310.network.model.JoinRoomRequest;
 import com.csci3310.network.model.RoomId;
 import com.csci3310.network.model.Success;
@@ -10,6 +11,7 @@ import com.csci3310.network.model.Success;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import okhttp3.Request;
 import retrofit2.Call;
@@ -52,7 +54,7 @@ public class NetworkManager {
                         listener.onJoinRoomFail(networkUnreachable);
                     }
                 };
-                Call<Success> joinRoomRequestCall = httpService.joinRoom(new JoinRoomRequest(roomId,playerName);
+                Call<Success> joinRoomRequestCall = httpService.joinRoom(new JoinRoomRequest(roomId,playerName));
                 joinRoomRequestCall.enqueue(joinRoomCallBack);
             }
         }).start();
@@ -93,51 +95,67 @@ public class NetworkManager {
         // None, UI will leave waiting room without waiting for server response
     }
 
+
     public void startPlayerListPolling(final WaitingRoomScreen waitingRoom, final NetworkTaskFinishListener listener){
         new Thread(new Runnable(){
             @Override
             public void run() {
-                HashMap<String, Player> playerMap = waitingRoom.getPlayerMap();
-                Player me = waitingRoom.getMe();
 
-                int i=0;
-                while(waitingRoom.getPlayerListUpdatePollingTrigger()){
-//                    if(i == 0){
-//                        playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
-//                        i++;
-//                    }else if(i == 1){
-//                        playerMap.remove("testing0");
-//                        i++;
-//                    }else if(i == 2){
-//                        playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
-//                        i++;
-//                    }else if(i == 3){
-//                        playerMap.put("testing1", new Player(Player.Type.Hunter, "Hunter 1", "testing1"));
-//                        i++;
-//                    }else{
-//                        playerMap.remove("testing0");
-//                        playerMap.remove("testing1");
-//                        i = 0;
-//                    }
-                    if(i == 0) {
-                        playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
-                        playerMap.put("testing1", new Player(Player.Type.Hunter, "Hunter 1", "testing1"));
-                        playerMap.put("testing2", new Player(Player.Type.Hunter, "Hunter 2", "testing2"));
+                final HashMap<String, Player> playerMap = waitingRoom.getPlayerMap();
+                final Player me = waitingRoom.getMe();
+
+                //use
+                //waitingRoom.getRoomId();
+                //get
+                //playerMap.put("testing0", new Player(Player.Type.Hunter, "Hunter 0", "testing0"));
+                //listener.onPlayerListUpdate();
+
+                final HTTP httpService = HTTP.retrofit.create(HTTP.class);
+
+                final Callback<GameStartCheckResponse> gameStartCheckResponseCallback = new Callback<GameStartCheckResponse>() {
+                    @Override
+                    public void onResponse(Call<GameStartCheckResponse> call, Response<GameStartCheckResponse> response) {
+                        if(!response.isSuccessful()){
+                            //server error
+                            call.enqueue(this);
+                        }
+                        else {
+                            //Success
+                            List<GameStartCheckResponse.Player> playerList = response.body().getPlayerList();
+                            String victim = response.body().getVictim();
+                            playerMap.clear();
+                            playerMap.put(me.getAndroidID(),me);
+
+                            for (GameStartCheckResponse.Player player:playerList ) {
+                                if(player.uuid != me.getAndroidID()) {
+                                    if (victim.equals(player.uuid)){
+                                        playerMap.put(player.uuid,new Player(Player.Type.Huntee,player.playerName,player.uuid));
+                                    }
+                                    else{
+                                        playerMap.put(player.uuid,new Player(Player.Type.Hunter,player.playerName,player.uuid));
+                                    }
+                                }
+                            }
+                            listener.onPlayerListUpdate();
+                            if(waitingRoom.getPlayerListUpdatePollingTrigger()) {
+                                call.enqueue(this);
+                            }
+                        }
                     }
-                    listener.onPlayerListUpdate();
-                    i++;
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+
+                    @Override
+                    public void onFailure(Call<GameStartCheckResponse> call, Throwable t) {
+                        //call again
+                        call.enqueue(this);
                     }
-                }
-                System.out.println("PlayerList Polling Thread Ended");
+                };
+                final Call<GameStartCheckResponse>  gameStartCheckResponseCall= httpService.startGameCheck(new RoomId(waitingRoom.getRoomId()));
+                gameStartCheckResponseCall.enqueue(gameStartCheckResponseCallback);
             }
         }).start();
     }
 
-    static class NetworkTaskFinishListener implements JoinRoomSuccessListener, JoinRoomFailListener, CreateRoomSuccessListener, CreateRoomFailListener, PlayerListUpdateListener {
+    static class NetworkTaskFinishListener implements JoinRoomSuccessListener, JoinRoomFailListener, CreateRoomSuccessListener, CreateRoomFailListener, PlayerListUpdateListener ,PlayerLocationUpdateListener{
         @Override
         public void onJoinRoomSuccess() {}
         @Override
@@ -148,6 +166,8 @@ public class NetworkManager {
         public void onCreateRoomFail(String response) {}
         @Override
         public void onPlayerListUpdate() {}
+        @Override
+        public void onPlayerLocationUpdate() { }
     }
 
     interface JoinRoomSuccessListener {
@@ -164,6 +184,9 @@ public class NetworkManager {
     }
     interface PlayerListUpdateListener {
         void onPlayerListUpdate();
+    }
+    interface PlayerLocationUpdateListener{
+        void onPlayerLocationUpdate();
     }
 
 }
