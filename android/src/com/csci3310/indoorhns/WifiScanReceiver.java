@@ -54,7 +54,6 @@ public class WifiScanReceiver extends BroadcastReceiver {
     public void onReceive(Context c, Intent intent) {
         final List<ScanResult> scanReusltList = wifiManager.getScanResults();
 
-
         new Thread(new Runnable() {
             @Override
             public void run() {

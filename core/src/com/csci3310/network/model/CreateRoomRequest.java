@@ -10,8 +10,8 @@ public class CreateRoomRequest {
     public String uuid;
     public String playerName;
 
-    public CreateRoomRequest(String playerName){
-        this.uuid = UUID.randomUUID().toString();
+    public CreateRoomRequest(String playerName,String uuid){
+        this.uuid = uuid;
         this.playerName = playerName;
     }
 

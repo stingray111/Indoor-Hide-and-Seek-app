@@ -129,7 +129,7 @@ public class WelcomeScreen implements Screen{
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        mainGame.getNetworkManager().createRoom(createRoomName.getText(), new NetworkManager.NetworkTaskFinishListener(){
+                        mainGame.getNetworkManager().createRoom(createRoomName.getText(), mainGame.getAndroidConnector().getCoordinator().getAndroidId(),new NetworkManager.NetworkTaskFinishListener(){
                             @Override
                             public void onCreateRoomSuccess(final int roomId) {
                                 Gdx.app.postRunnable(new Runnable() {
@@ -162,7 +162,7 @@ public class WelcomeScreen implements Screen{
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        mainGame.getNetworkManager().joinRoom(Integer.parseInt(joinRoomId.getText()), joinRoomName.getText(), new NetworkManager.NetworkTaskFinishListener(){
+                        mainGame.getNetworkManager().joinRoom(Integer.parseInt(joinRoomId.getText()),mainGame.getAndroidConnector().getCoordinator().getAndroidId(), joinRoomName.getText(), new NetworkManager.NetworkTaskFinishListener(){
                             @Override
                             public void onJoinRoomSuccess() {
                                 Gdx.app.postRunnable(new Runnable() {

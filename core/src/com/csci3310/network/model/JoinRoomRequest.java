@@ -11,9 +11,9 @@ public class JoinRoomRequest {
     public String uuid;
     public String playerName;
 
-    public JoinRoomRequest(int roomId, String playerName){
+    public JoinRoomRequest(int roomId,String uuid, String playerName){
         this.playerName = playerName;
-        this.uuid = UUID.randomUUID().toString();
+        this.uuid = uuid;
         this.roomId = roomId;
     }
 }

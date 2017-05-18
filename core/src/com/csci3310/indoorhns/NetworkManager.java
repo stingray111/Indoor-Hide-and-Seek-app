@@ -34,7 +34,7 @@ public class NetworkManager {
     public static String networkUnreachable = "Network Unreachable";
 
 
-    public void joinRoom(final int roomId, final String playerName, final NetworkTaskFinishListener listener){
+    public void joinRoom(final int roomId,final String uuid, final String playerName, final NetworkTaskFinishListener listener){
         //TO-DO join room network IO
         new Thread(new Runnable() {
             @Override
@@ -58,13 +58,13 @@ public class NetworkManager {
                         listener.onJoinRoomFail(networkUnreachable);
                     }
                 };
-                Call<Success> joinRoomRequestCall = httpService.joinRoom(new JoinRoomRequest(roomId,playerName));
+                Call<Success> joinRoomRequestCall = httpService.joinRoom(new JoinRoomRequest(roomId,uuid,playerName));
                 joinRoomRequestCall.enqueue(joinRoomCallBack);
             }
         }).start();
     }
 
-    public void createRoom(final String playerName,final NetworkTaskFinishListener listener){
+    public void createRoom(final String playerName, final String uuid, final NetworkTaskFinishListener listener){
         //TO-DO create room network IO
         new Thread(new Runnable() {
             @Override
@@ -86,7 +86,7 @@ public class NetworkManager {
                         listener.onCreateRoomFail(networkUnreachable);
                     }
                 };
-                Call<RoomId> createRoomCall = httpService.createRoom(new CreateRoomRequest(playerName));
+                Call<RoomId> createRoomCall = httpService.createRoom(new CreateRoomRequest(playerName,uuid));
                 createRoomCall.enqueue(createRoomCallBack);
             }
         }).start();
