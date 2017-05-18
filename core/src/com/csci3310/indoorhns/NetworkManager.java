@@ -9,6 +9,7 @@ import com.csci3310.network.model.GameStartCheckResponse;
 import com.csci3310.network.model.JoinRoomRequest;
 import com.csci3310.network.model.LocationLabel;
 import com.csci3310.network.model.LocationLabelExchangeResponse;
+import com.csci3310.network.model.QuitRoomRequest;
 import com.csci3310.network.model.RoomId;
 import com.csci3310.network.model.Success;
 
@@ -32,7 +33,6 @@ public class NetworkManager {
     public static String serverError = "Server Error";
     public static String networkUnreachable = "Network Unreachable";
 
-    final static public String server = "http://localhost/";
 
     public void joinRoom(final int roomId, final String playerName, final NetworkTaskFinishListener listener){
         //TO-DO join room network IO
@@ -75,7 +75,7 @@ public class NetworkManager {
                     @Override
                     public void onResponse(Call<RoomId> call, Response<RoomId> response) {
                         if(!response.isSuccessful()){
-                            listener.onJoinRoomFail(serverError);
+                            listener.onCreateRoomFail(serverError);
                         }else {
                             listener.onCreateRoomSuccess(response.body().getRoomid());
                         }
@@ -83,7 +83,7 @@ public class NetworkManager {
 
                     @Override
                     public void onFailure(Call<RoomId> call, Throwable t) {
-                        listener.onJoinRoomFail(networkUnreachable);
+                        listener.onCreateRoomFail(networkUnreachable);
                     }
                 };
                 Call<RoomId> createRoomCall = httpService.createRoom(new CreateRoomRequest(playerName));
@@ -92,20 +92,54 @@ public class NetworkManager {
         }).start();
     }
 
-    public void leaveRoom(int roomId){
-        //TO-DO leave room network IO
-
-        //finally
-        // None, UI will leave waiting room without waiting for server response
+    public void leaveRoom(final int roomId,final String uuid){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                final Callback<Success> quitRoomCallback = new Callback<Success>() {
+                    @Override
+                    public void onResponse(Call<Success> call, Response<Success> response) {
+                        if(!response.isSuccessful()){
+                            call.enqueue(this);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Success> call, Throwable t) {
+                        call.enqueue(this);
+                    }
+                };
+                Call<Success> quitRoomCall = httpService.quitRoom(new QuitRoomRequest(roomId, uuid));
+                quitRoomCall.enqueue(quitRoomCallback);
+            }
+        }).start();
     }
 
-    public void endGame(int roomId){
-        // victim being caught, end game
-
+    public void endGame(final int roomId){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final HTTP httpService = HTTP.retrofit.create(HTTP.class);
+                final Callback<Success> endGameCallback = new Callback<Success>() {
+                    @Override
+                    public void onResponse(Call<Success> call, Response<Success> response) {
+                        if(!response.isSuccessful()){
+                            call.enqueue(this);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Success> call, Throwable t) {
+                        call.enqueue(this);
+                    }
+                };
+                Call<Success> endGameCall = httpService.endGame(new RoomId(roomId));
+                endGameCall.enqueue(endGameCallback);
+            }
+        }).start();
     }
 
 
-    public void startPlayerLocationPolling(final GameScreen gameScreen, NetworkTaskFinishListener listener){
+    public void startPlayerLocationPolling(final GameScreen gameScreen, final NetworkTaskFinishListener listener){
         final String uuid = gameScreen.getMainGame().getAndroidConnector().getCoordinator().getAndroidId();
         new Thread(new Runnable() {
             @Override
@@ -116,12 +150,18 @@ public class NetworkManager {
                     @Override
                     public void onResponse(Call<LocationLabelExchangeResponse> call, Response<LocationLabelExchangeResponse> response) {
                         if(gameScreen.getPlayerLocationUpdatePollingTrigger()){
-                            call.enqueue(this);
                             if(response.body().gameEnd){
-
+                                listener.onEndGame();
                             }
                             else{
+                                call.enqueue(this);
+
                                 List<LocationLabel> locationLabels = response.body().locationList;
+                                HashMap<String,String> hm = new HashMap<String, String>();
+                                for (LocationLabel ll: locationLabels ) {
+                                    hm.put(ll.uuid,ll.locationLabel);
+                                }
+                                listener.onPlayerLocationUpdate(hm);
                             }
                         }
                     }

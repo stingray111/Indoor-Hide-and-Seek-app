@@ -377,6 +377,6 @@ public class WaitingRoomScreen implements Screen {
         skin.dispose();
         batch.dispose();
         this.playerListUpdatePollingTrigger = false;
-        this.mainGame.getNetworkManager().leaveRoom(roomId);
+        this.mainGame.getNetworkManager().leaveRoom(roomId,mainGame.getAndroidConnector().getCoordinator().getAndroidId());
     }
 }
