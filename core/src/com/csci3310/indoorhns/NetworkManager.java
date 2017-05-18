@@ -2,6 +2,7 @@ package com.csci3310.indoorhns;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.StringBuilder;
+import com.badlogic.gdx.utils.async.AsyncTask;
 import com.csci3310.network.HTTP;
 import com.csci3310.network.LocationLabelExchangeRequest;
 import com.csci3310.network.model.CreateRoomRequest;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Handler;
 
 import okhttp3.Request;
 import retrofit2.Call;
@@ -237,7 +239,7 @@ public class NetworkManager {
                             if(!hasHuntee)listener.onHunteeLeave();
                             listener.onPlayerListUpdate();
                             if(waitingRoom.getPlayerListUpdatePollingTrigger()) {
-                                System.out.println("here: enqueue again");
+                                try{ Thread.sleep(500); }catch (Exception e){ }
                                 call.clone().enqueue(this);
                             }
                         }
@@ -246,6 +248,7 @@ public class NetworkManager {
                     @Override
                     public void onFailure(Call<GameStartCheckResponse> call, Throwable t) {
                         //call again
+                        try{ Thread.sleep(500); }catch (Exception e){ }
                         call.clone().enqueue(this);
                     }
                 };
