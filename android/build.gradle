@@ -19,7 +19,7 @@ android {
     }
     defaultConfig {
         applicationId "com.csci3310.indoorhns"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 23
     }
 }

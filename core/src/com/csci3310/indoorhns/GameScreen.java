@@ -41,6 +41,7 @@ public class GameScreen implements Screen {
     final private static Color HunteeColor = Color.WHITE;
     final private static int[] HunterRadiusList = new int[]{30, 25, 20};
     final private static int HunteeRadius = 40;
+    final private static double HunteeRadiusRatio = 40/720;
 
     private IndoorHideAndSeek mainGame;
     private int roomId;
@@ -163,7 +164,7 @@ public class GameScreen implements Screen {
         // floor 9
         floor9 = new Image(new Texture(Gdx.files.internal("09_blue.png")));
         floor9.setSize(floor9.getPrefWidth()*floor9ImageRatio, floor9.getPrefHeight()*floor9ImageRatio);
-        floor9.setPosition((width - floor9.getWidth())/2, (height - floor9.getHeight())/2);
+        floor9.setPosition((width - floor9.getWidth()), (height - floor9.getHeight())/2);
 
         //floor9 label
         floor9Label = new Label("Floor 9", new Label.LabelStyle(skin.getFont("text"), Color.GREEN));
@@ -216,10 +217,11 @@ public class GameScreen implements Screen {
                 }
                 loopCnt++;
             }else{
-                pixmap = new Pixmap(HunteeRadius * 2, HunteeRadius * 2, RGBA8888);
+                int radius = (int) HunteeRadiusRatio*height;
+                pixmap = new Pixmap(radius * 2, radius * 2, RGBA8888);
                 pixmap.setColor(HunteeColor);
                 for(int i=0; i<4; i++){
-                    pixmap.drawCircle(HunteeRadius, HunteeRadius, HunteeRadius-i);
+                    pixmap.drawCircle(radius, radius, radius-i);
                 }
 
             }
