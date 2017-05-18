@@ -36,5 +36,4 @@ public interface HTTP2 {
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
-
 }

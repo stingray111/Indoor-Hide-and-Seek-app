@@ -96,6 +96,16 @@ public class NetworkManager {
     }
 
 
+    public void startPlayerLocationPolling(GameScreen gameScreen, NetworkTaskFinishListener listener){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+    }
+
+
     public void startPlayerListPolling(final WaitingRoomScreen waitingRoom, final NetworkTaskFinishListener listener){
         new Thread(new Runnable(){
             @Override
