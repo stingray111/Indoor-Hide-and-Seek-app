@@ -36,7 +36,7 @@ import java.util.HashMap;
 
 public class WaitingRoomScreen implements Screen {
 
-    final static float CountdownTime = 5f;
+    final static float CountdownTime = 30f;
     final static int RoomFullLimit = 4;
 
     private IndoorHideAndSeek mainGame;
