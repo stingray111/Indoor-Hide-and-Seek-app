@@ -61,6 +61,7 @@ public class WifiScanReceiver extends BroadcastReceiver {
                 Callback<FindApiTrackResponse> findApiTrackResponseCallback = new Callback<FindApiTrackResponse>() {
                     @Override
                     public void onResponse(Call<FindApiTrackResponse> call, Response<FindApiTrackResponse> response) {
+                        System.out.println("Wifi: "+response.body().location);
                         WifiScanReceiver.location = response.body().location;
                     }
 

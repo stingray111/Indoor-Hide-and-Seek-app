@@ -1,5 +1,7 @@
 package com.csci3310.indoorhns;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -11,6 +13,8 @@ public class FindApiTrackRequest {
     public String username;
     public String location;
     public long time;
+
+    @SerializedName("wifi-fingerprint")
     public List<WifiSignal> wifi_fingerprint;
 
     public FindApiTrackRequest(String username, List<WifiSignal> wifiSignalList){
