@@ -4,6 +4,8 @@ import com.csci3310.network.model.CreateRoomRequest;
 import com.csci3310.network.model.JoinRoomRequest;
 import com.csci3310.network.model.LocationLabel;
 import com.csci3310.network.model.PushLocationLabelRequest;
+import com.csci3310.network.model.PushLocationLabelResponse;
+import com.csci3310.network.model.QuitRoomRequest;
 import com.csci3310.network.model.RoomId;
 import com.csci3310.network.model.StartGameResponse;
 import com.csci3310.network.model.Success;
@@ -32,6 +34,17 @@ public interface HTTP {
         @Body JoinRoomRequest joinRoomRequest
     );
 
+    @POST("/quitRoom")
+    Call<Success> quitRoom(
+        @Body QuitRoomRequest quitRoomRequest
+    );
+
+    //or endgame
+    @POST("/endGame")
+    Call<Success> endGame(
+            @Body RoomId roomId
+    );
+
     @POST("/getLocationLabelList")
     Call<List<LocationLabel>> getLocationLabelList(
             @Body RoomId roomId
@@ -43,14 +56,13 @@ public interface HTTP {
     );
 
     @POST("/pushLocationLabel")
-    Call<PushLocationLabelRequest> pushLocationLabel(
-            @Body Success success
+    Call<PushLocationLabelResponse> pushLocationLabel(
+            @Body PushLocationLabelRequest pushLocationLabelRequest
     );
 
-    final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+    OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .readTimeout(10, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
-            //.sslSocketFactory(SSL.getNewSSL(),SSL.getTm())
             .build();
 
     Retrofit retrofit = new Retrofit.Builder()
