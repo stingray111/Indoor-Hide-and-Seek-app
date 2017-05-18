@@ -152,7 +152,9 @@ public class NetworkManager {
                 Callback<LocationLabelExchangeResponse> locationLabelExchangeResponseCallback = new Callback<LocationLabelExchangeResponse>() {
                     @Override
                     public void onResponse(Call<LocationLabelExchangeResponse> call, Response<LocationLabelExchangeResponse> response) {
+                        System.out.println("exchange: start");
                         if(gameScreen.getPlayerLocationUpdatePollingTrigger()){
+
                             if(!response.isSuccessful()){
                                 listener.onEndGame();
                             }else if(response.body().gameEnd){
@@ -163,7 +165,9 @@ public class NetworkManager {
 
                                 List<LocationLabel> locationLabels = response.body().locationList;
                                 HashMap<String,String> hm = new HashMap<String, String>();
+                                System.out.println("exchange: here" );
                                 for (LocationLabel ll: locationLabels ) {
+                                    System.out.println("exchange: "+ ll.uuid+" "+ll.locationLabel);
                                     hm.put(ll.uuid,ll.locationLabel);
                                 }
                                 listener.onPlayerLocationUpdate(hm);
@@ -185,12 +189,6 @@ public class NetworkManager {
                 locationLabelExchangeRequestCall.enqueue(locationLabelExchangeResponseCallback);
             }
         }).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
     }
 
 
