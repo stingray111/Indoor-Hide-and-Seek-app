@@ -61,18 +61,21 @@ public class WifiScanReceiver extends BroadcastReceiver {
                 Callback<FindApiTrackResponse> findApiTrackResponseCallback = new Callback<FindApiTrackResponse>() {
                     @Override
                     public void onResponse(Call<FindApiTrackResponse> call, Response<FindApiTrackResponse> response) {
-                        System.out.println("Wifi: "+response.body().location);
-                        WifiScanReceiver.location = response.body().location;
+                        if(response.isSuccessful()) {
+                            System.out.println("Wifi: " + response.body().location);
+                            WifiScanReceiver.location = response.body().location;
+                        }else{
+                            System.out.println("Wifi: response 500");
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<FindApiTrackResponse> call, Throwable t) {
+                        System.out.println("Wifi: on failure");
                     }
                 };
                 List<WifiSignal> wifiSignals = new ArrayList<>();
-                System.out.println("wifi: start");
                 for (ScanResult r:scanReusltList ) {
-                    System.out.println("wifi: "+r.BSSID+" "+r.level);
                     wifiSignals.add(new WifiSignal(r.BSSID,r.level));
                 }
                 FindApiTrackRequest request = new FindApiTrackRequest(uuid,wifiSignals);
