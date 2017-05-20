@@ -25,7 +25,7 @@ public class WifiScanReceiver extends BroadcastReceiver {
     private ArrayList<WifiFingerprint> resultList;
     private boolean keepScanning;
     private boolean scanning;
-    public volatile static String location;
+    public volatile static String location = "09r3";
 
     public WifiScanReceiver(Context context) {
         wifiManager = (WifiManager) context.getSystemService (Context.WIFI_SERVICE);
