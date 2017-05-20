@@ -151,8 +151,9 @@ public class NetworkManager {
 
         HashMap<String,String> hm = new HashMap<String, String>();
         System.out.println("exchange: here" );
-        hm.put("uuidKen","09r1");
-        hm.put("uuidEdmund","09r1");
+        hm.put("uuidKen","09c2");
+        hm.put("uuidEdmund","09c3");
+        hm.put("uuidThomas","10c1");
         listener.onPlayerLocationUpdate(hm);
 
         /*
@@ -214,8 +215,9 @@ public class NetworkManager {
         playerMap.clear();
         playerMap.put(me.getAndroidID(),me);
 
-        playerMap.put("uuidEdmund",new Player(Player.Type.Hunter,"Edmund","uuidEdmund"));
+        playerMap.put("uuidEdmund",new Player(Player.Type.Huntee,"Edmund","uuidEdmund"));
         playerMap.put("uuidKen",new Player(Player.Type.Hunter,"Ken","uuidKen"));
+        playerMap.put("uuidThomas",new Player(Player.Type.Hunter,"Thomas","uuidThomas"));
 
         listener.onPlayerListUpdate();
         /*
