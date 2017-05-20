@@ -38,6 +38,8 @@ public class NetworkManager {
 
     public void joinRoom(final int roomId,final String uuid, final String playerName, final NetworkTaskFinishListener listener){
         //TO-DO join room network IO
+        listener.onJoinRoomSuccess();
+        /*
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -64,10 +66,12 @@ public class NetworkManager {
                 joinRoomRequestCall.enqueue(joinRoomCallBack);
             }
         }).start();
+        */
     }
 
     public void createRoom(final String playerName, final String uuid, final NetworkTaskFinishListener listener){
-        //TO-DO create room network IO
+        listener.onCreateRoomSuccess(8);
+        /*
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -93,6 +97,7 @@ public class NetworkManager {
                 createRoomCall.enqueue(createRoomCallBack);
             }
         }).start();
+        */
     }
 
     public void leaveRoom(final int roomId,final String uuid){
