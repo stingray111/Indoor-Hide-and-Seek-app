@@ -148,6 +148,14 @@ public class NetworkManager {
 
 
     public void startPlayerLocationPolling(final GameScreen gameScreen, final NetworkTaskFinishListener listener){
+
+        HashMap<String,String> hm = new HashMap<String, String>();
+        System.out.println("exchange: here" );
+        hm.put("uuidKen","09r1");
+        hm.put("uuidEdmund","09r1");
+        listener.onPlayerLocationUpdate(hm);
+
+        /*
         final String uuid = gameScreen.getMainGame().getAndroidConnector().getCoordinator().getAndroidId();
         new Thread(new Runnable() {
             @Override
@@ -178,6 +186,7 @@ public class NetworkManager {
                                     hm.put(ll.uuid,ll.locationLabel);
                                 }
                                 listener.onPlayerLocationUpdate(hm);
+
                             }
                         }
                     }
@@ -193,10 +202,23 @@ public class NetworkManager {
                 System.out.println("exchange: mylocation"+gameScreen.getMainGame().getAndroidConnector().getCoordinator().getWifiScanReceiverLocation());
             }
         }).start();
+        */
     }
 
 
     public void startPlayerListPolling(final WaitingRoomScreen waitingRoom, final NetworkTaskFinishListener listener){
+
+        final HashMap<String, Player> playerMap = waitingRoom.getPlayerMap();
+        final Player me = waitingRoom.getMe();
+
+        playerMap.clear();
+        playerMap.put(me.getAndroidID(),me);
+
+        playerMap.put("uuidEdmund",new Player(Player.Type.Hunter,"Edmund","uuidEdmund"));
+        playerMap.put("uuidKen",new Player(Player.Type.Hunter,"Ken","uuidKen"));
+
+        listener.onPlayerListUpdate();
+        /*
         System.out.println("here: startPlayerLIstPolling");
         new Thread(new Runnable(){
             @Override
@@ -254,6 +276,7 @@ public class NetworkManager {
                 gameStartCheckResponseCall.enqueue(gameStartCheckResponseCallback);
             }
         }).start();
+        */
     }
 
     static class NetworkTaskFinishListener implements JoinRoomSuccessListener, JoinRoomFailListener, CreateRoomSuccessListener, CreateRoomFailListener, PlayerListUpdateListener ,PlayerLocationUpdateListener{
